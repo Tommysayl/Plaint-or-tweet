@@ -29,12 +29,12 @@ class BernoulliNaiveBayes(StableNaiveBayes):
     def p_xi_given_y(self, X, i, y):
         p1 = 0
         if y == 1:
-            p1 = self.count_x_1_y_1[i] / self.count_y_1
+            p1 = (self.count_x_1_y_1[i] + 1) / (self.count_y_1 + 2) #+1/+2 are due to Laplace smoothing
         else:
-            p1 = self.count_x_1_y_0[i] / (self.m - self.count_y_1)
+            p1 = (self.count_x_1_y_0[i] + 1) / (self.m - self.count_y_1 + 2) #+1/+2 are due to Laplace smoothing
 
         return p1 if X[i] == 1 else (1 - p1)
 
     def p_y(self, y):
-        p1 = self.count_y_1 / self.m
+        p1 = (self.count_y_1 + 1) / (self.m + 2) #+1/+2 are due to Laplace smoothing
         return p1 if y == 1 else (1 - p1)

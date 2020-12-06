@@ -31,7 +31,7 @@ class StableNaiveBayes(ABC):
         return sum([log(self.p_xi_given_y(X, i, y)) for i in range(len(X))]) + log(self.p_y(y))
     
     #predict y for data X
-    def predict_class(self):
+    def predict_class(self, X):
         p0 = self.log_prob_y_given_x(X, 0)
         p1 = self.log_prob_y_given_x(X, 1)
         return 0 if p0 > p1 else 1
