@@ -20,7 +20,6 @@ class Singleton(object):
 
 class DatasetReader(Singleton, ABC):
     WRONG_PATH_ERR = "No dataset found at {}.\nPlease provide a path to an available dataset or use the default one."
-    IGNORE_TOKEN = "|IGNORE|"
 
     _nlp = None
     _ds = None
