@@ -1,9 +1,21 @@
 # Plaint-or-tweet
+Final project for the Fundamentals of Data Science course.
 
-#### Final project for the Fundamentals for Data Science course, by: 
+<img src="logo.png" width="256px">
 
-- Tommaso Battistini
-- Edoardo De Matteis
-- Leonardo Emili
-- Mirko Giacchini
-- Alessio Luciani
+# Install dependencies
+- Download and install [Miniconda](https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh)
+- Run ```conda env create -f environment.yml```
+- Run ```conda activate plaint_or_tweet```
+- That's it!
+
+# Update dependencies
+- Add a new dependency in environment.yml
+- Run ```conda env update -f environment.yml --prune```
+
+# Authors
+- [Tommaso Battistini](https://github.com/Frisayl)
+- [Edoardo De Matteis](https://github.com/edodema)
+- [Leonardo Emili](https://github.com/LeonardoEmili)
+- [Mirko Giacchini](https://github.com/Mirko222)
+- [Alessio Luciani](https://github.com/AlessioLuciani)

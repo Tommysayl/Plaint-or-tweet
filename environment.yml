@@ -1,0 +1,14 @@
+name: plaint_or_tweet
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python
+  - matplotlib
+  - numpy
+  - tqdm
+  - ipykernel
+  - pandas
+  - pytorch
+  - spacy
+  - spacy-lookups-data 
