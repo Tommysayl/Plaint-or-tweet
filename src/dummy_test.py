@@ -1,6 +1,20 @@
 import numpy as np
 from BernoulliNaiveBayes import BernoulliNaiveBayes
 import math
+from TwitterDSReader import TwitterDSReader
+
+print("Preprocessing test --- START\n")
+
+ds = TwitterDSReader()
+ds.read_from_file()
+for i, tweet in enumerate(ds.docs()):
+    for sentence in tweet.sentences:
+        for token in sentence:
+            print(token, token.lemma_)
+    if i==0: break
+
+print("\nPreprocessing test --- END\n")
+
 
 y = np.array([1, 1, 0, 1, 0])
 X = [[1, 0, 1, 1],

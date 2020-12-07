@@ -11,4 +11,8 @@ dependencies:
   - pandas
   - pytorch
   - spacy
-  - spacy-lookups-data 
+  - spacy-lookups-data
+  - spacy-model-en_core_web_sm
+  - pip
+  - pip:
+    - urlextract

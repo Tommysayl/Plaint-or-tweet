@@ -130,3 +130,10 @@ dmypy.json
 
 # macOS
 .DS_Store
+
+# Code settings
+.vscode
+
+# Extracted datasets
+datasets/*
+!datasets/sentiment140.zip
