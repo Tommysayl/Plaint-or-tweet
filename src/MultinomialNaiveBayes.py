@@ -30,16 +30,16 @@ class MultinomialNaiveBayes():
     # theta2[i][j] -> N(xj, yi)/N(yi)
     def train(self, X, y):
 
-        self.m += len(y)
-        self.count_y_1 += np.count_nonzero(y) #nonzero == 1
+        self.m = len(y)
+        self.count_y_1 = np.count_nonzero(y) #nonzero == 1
+        self.count_y_0 = self.m - self.count_y_1
 
         # Training theta1
-        self.th1.append(self.p_y(0))
-        self.th1.append(self.p_y(1))
+        self.th1.append((self.count_y_0 + 1) / (self.m + 2))
+        self.th1.append((self.count_y_1 + 1) / (self.m + 2))
 
         # Number multinomial values
-        mul_num = np.max(X) + 1
-
+        mul_num = np.max(X) + 1 # Also considering 0 as a value
 
         # Initializing theta2
         for i in range(mul_num):
@@ -47,24 +47,22 @@ class MultinomialNaiveBayes():
             self.th2[1].append(0) 
 
         # Training theta2
-        for i in range(len(X)):
+        for i in range(self.m):
             for j in range(X.shape[1]):
                 # Obtaining N(xj, yi)
                 self.th2[y[i]][X[i][j]] += 1
         for j in range(mul_num):
             self.th2[0][j] = (self.th2[0][j] + 1) / (self.count_y_0 + mul_num) # Applying Laplace smoothing
             self.th2[1][j] = (self.th2[1][j] + 1) / (self.count_y_1 + mul_num) # same here
-    
-
-    def p_y(self, y):
-        p1 = (self.count_y_1 + 1) / (self.m + 2) #+1/+2 are due to Laplace smoothing
-        return p1 if y == 1 else (1 - p1)
-
 
     # Makes a prediction, given the features vector X.
     # The model has to be previously trained.
     def predict(self, X):
         y0 = self.th1[0] * np.product([self.th2[0][X[j]] for j in range(len(X))])
         y1 = self.th1[1] * np.product([self.th2[1][X[j]] for j in range(len(X))])
+        print("th1: ", self.th1)
+        print("th2: ", self.th2)
+        print("y0: ", y0)
+        print("y1: ", y1)
         return 0 if y0 > y1 else 1
         
