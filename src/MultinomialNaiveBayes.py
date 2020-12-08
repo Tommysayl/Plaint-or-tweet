@@ -6,7 +6,7 @@ Naive Bayes where:
 each feature Xi has domain in {0,1,2,...}
 and each y is in {0,1}
 '''
-class MultinomialNaiveBayes(StableNaiveBayes):
+class MultinomialNaiveBayes():
     def __init__(self):
         # Dataset dimension
         self.m = 0
@@ -34,8 +34,8 @@ class MultinomialNaiveBayes(StableNaiveBayes):
         self.count_y_1 += np.count_nonzero(y) #nonzero == 1
 
         # Training theta1
-        self.th1.append(p_y(0))
-        self.th1.append(p_y(1))
+        self.th1.append(self.p_y(0))
+        self.th1.append(self.p_y(1))
 
         # Number multinomial values
         mul_num = np.max(X) + 1
@@ -64,7 +64,7 @@ class MultinomialNaiveBayes(StableNaiveBayes):
     # Makes a prediction, given the features vector X.
     # The model has to be previously trained.
     def predict(self, X):
-        y0 = self.th1[0] * np.product([self.th2[0][j] for j in range(len(X))])
-        y1 = self.th1[1] * np.product([self.th2[1][j] for j in range(len(X))])
+        y0 = self.th1[0] * np.product([self.th2[0][X[j]] for j in range(len(X))])
+        y1 = self.th1[1] * np.product([self.th2[1][X[j]] for j in range(len(X))])
         return 0 if y0 > y1 else 1
         
