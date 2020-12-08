@@ -7,7 +7,7 @@ from typing import Generator
 import re
 from urlextract import URLExtract
 
-DatasetIstance = namedtuple("DatasetIstance", "sentences label")
+DatasetIstance = namedtuple("DatasetIstance", "tokens label")
 
 class Singleton(object):
     _instance = None
