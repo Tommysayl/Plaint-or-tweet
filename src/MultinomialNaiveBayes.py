@@ -18,16 +18,23 @@ class MultinomialNaiveBayes():
         # 1D vector -> [p_y0, p_y1]
         self.th1 = [] 
 
-        # 2D vector -> [[px0_given_y0, px1_given_y0, px2_given_y0, ... ], 
-        #              [px0_given_y1, px1_given_y1, px2_given_y1, ... ]]]
+        # 3D vector [yi][multinomial_value][feature_index]
+        # -> [[px00_given_y0, px01_given_y0, px02_given_y0, ... ], 
+        #      [px10_given_y0, px11_given_y0, px12_given_y0, ... ],
+        #       ...],
+        #   [px00_given_y1, px01_given_y1, px02_given_y1, ... ], 
+        #      [px10_given_y1, px11_given_y1, px12_given_y1, ... ],
+        #       ...]
+        # Starting with 2 empty vectors, one for y0 and one for y1
         self.th2 = [[],[]] 
+        
                     
 
     # X and y must be numpy arrays
     # each row of X is a training example
     # Trains the two model parameter types:
     # theta1[i] -> N(yi)/m
-    # theta2[i][j] -> N(xj, yi)/N(yi)
+    # theta2[i][l][j] -> N(xlj, yi)/N(yi)
     def train(self, X, y):
 
         self.m = len(y)
@@ -43,26 +50,30 @@ class MultinomialNaiveBayes():
 
         # Initializing theta2
         for i in range(mul_num):
-            self.th2[0].append(0) 
-            self.th2[1].append(0) 
+            self.th2[0].append([0 for i in range(X.shape[1])]) 
+            self.th2[1].append([0 for i in range(X.shape[1])]) 
 
         # Training theta2
         for i in range(self.m):
             for j in range(X.shape[1]):
-                # Obtaining N(xj, yi)
-                self.th2[y[i]][X[i][j]] += 1
-        for j in range(mul_num):
-            self.th2[0][j] = (self.th2[0][j] + 1) / (self.count_y_0 + mul_num) # Applying Laplace smoothing
-            self.th2[1][j] = (self.th2[1][j] + 1) / (self.count_y_1 + mul_num) # same here
+                # Obtaining N(xlj, yi)
+                self.th2[y[i]][X[i][j]][j] += 1
+
+        for i in range(mul_num):
+            for j in range(X.shape[1]):
+                self.th2[0][i][j] = (self.th2[0][i][j] + (1/mul_num)*X.shape[1]) / \
+                    (self.count_y_0 + X.shape[1]) # Applying Laplace smoothing
+                self.th2[1][i][j] = (self.th2[1][i][j] + (1/mul_num)*X.shape[1]) / \
+                    (self.count_y_1 + X.shape[1]) # same here
 
     # Makes a prediction, given the features vector X.
     # The model has to be previously trained.
     def predict(self, X):
-        y0 = self.th1[0] * np.product([self.th2[0][X[j]] for j in range(len(X))])
-        y1 = self.th1[1] * np.product([self.th2[1][X[j]] for j in range(len(X))])
-        print("th1: ", self.th1)
-        print("th2: ", self.th2)
-        print("y0: ", y0)
-        print("y1: ", y1)
+        y0 = self.th1[0] * np.product([self.th2[0][X[j]][j] for j in range(len(X))])
+        y1 = self.th1[1] * np.product([self.th2[1][X[j]][j] for j in range(len(X))])
+        #print("th1: ", self.th1)
+        #print("th2: ", self.th2)
+        #print("y0: ", y0)
+        #print("y1: ", y1)
         return 0 if y0 > y1 else 1
         
