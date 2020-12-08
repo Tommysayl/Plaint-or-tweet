@@ -3,7 +3,7 @@ import os
 from utils import disable_exception_traceback
 import spacy
 from collections import namedtuple
-from typing import Generator
+from typing import Generator, List
 import re
 from urlextract import URLExtract
 
@@ -26,14 +26,27 @@ class DatasetReader(Singleton, ABC):
 
     @property
     @abstractmethod
-    def default_path(self):
+    def default_path(self) -> str:
         ''' A DatasetReader must provide the relative path to its dataset. '''
         pass
 
     @abstractmethod
-    def read_from_file(self, p=None) -> None:
+    def read_from_file(self, p=None, remove_stopwords=True, remove_links=True, correct_typos=True) -> None:
         ''' Implement here the logic for reading and parsing the dataset.  '''
-        pass
+        if not os.path.exists(self.get_path(p)):
+            with disable_exception_traceback():
+                raise IOError(self.WRONG_PATH_ERR.format(self.get_path(p)))
+
+    def build_from(self, docs, labels, remove_stopwords) -> None:
+        ''' Builds the dataset as a collection of [DatasetInstance]s from provided data. '''
+        if remove_stopwords:
+            self._ds = (DatasetIstance(self.clear_stopwords(doc), label) for doc, label in zip(docs, labels))
+        else:
+            self._ds = (DatasetIstance([token for token in doc], label) for doc, label in zip(docs, labels))
+
+    def clear_stopwords(self, doc) -> List[str]:
+        ''' Returns a list of non-stopword tokens. '''
+        return [token for token in doc if token.text not in self.nlp.Defaults.stop_words]
 
     @property
     def nlp(self):
@@ -43,28 +56,29 @@ class DatasetReader(Singleton, ABC):
             self._nlp.add_pipe(sentencizer)
         return self._nlp
 
-    def validate_dataset(self, p=None) -> None:
-        if not os.path.exists(self.get_path(p)):
-            with disable_exception_traceback():
-                raise IOError(self.WRONG_PATH_ERR.format(p))
-
     def docs(self) -> DatasetIstance:
+        ''' Returns an iterator of [DatasetIstance]s. '''
         if self._ds is None:
             self.read_from_file()
         return self._ds
 
     def get_path(self, path) -> str:
+        ''' Returns the provided dataset [path] if it exists, otherwise will return the [default_path] of the required dataset.  '''
         dir = os.path.dirname(os.path.abspath(__file__))
         return path if path is not None else os.path.join(dir, self.default_path)
 
-    def reduce_text_noise(self, text, remove_stopwords, remove_links, correct_typos) -> Generator[str, None, None]:
-        url_extractor = URLExtract()
-        return (self.reduce_span_noise(span, url_extractor, remove_stopwords, remove_links, correct_typos) for span in text)
+    def preprocess(self, raw_text, remove_links, correct_typos) -> Generator[spacy.tokens.doc.Doc, None, None]:
+        ''' Run base nlp pipeline over [raw_text], including tokenization, lemmatization and utilities to correct user typos. '''
+        batch_text = self._reduce_text_noise(raw_text, remove_links, correct_typos)
+        return self.nlp.pipe(batch_text)
 
-    def reduce_span_noise(self, span, extractor, remove_stopwords, remove_links, correct_typos) -> str:
-        if remove_stopwords:
-            # TODO: implement this
-            pass
+    def _reduce_text_noise(self, text, remove_links, correct_typos) -> Generator[str, None, None]:
+        ''' Just a vectorized function that applies _reduce_span_noise() to every span of the provided text. '''
+        url_extractor = URLExtract()
+        return (self._reduce_span_noise(span, url_extractor, remove_links, correct_typos) for span in text)
+
+    def _reduce_span_noise(self, span, extractor, remove_links, correct_typos) -> str:
+        ''' Apply some grammar corrections to fix user typos or remove URLs from text. '''
         if remove_links:
             for url in extractor.find_urls(span):
                 span = span.replace(url, "")
