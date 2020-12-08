@@ -27,7 +27,7 @@ def test_binary():
 
     model = MultinomialNaiveBayes()
     model.train(X, y)
-    print(model.predict([0, 0, 1, 1]))
+    print(model.predict_class([0, 0, 1, 1]))
 
 def test_multinomial():
 
@@ -54,11 +54,11 @@ def test_multinomial():
 
     model = MultinomialNaiveBayes()
     model.train(X, y)
-    print(model.predict([0, 0, 0, 3]))
-    print(model.predict([1, 3, 1, 0]))
-    print(model.predict([2, 2, 0, 0]))
-    print(model.predict([1, 2, 3, 2]))
-    print(model.predict([1, 0, 2, 3]))
+    print(model.predict_class([0, 0, 0, 3]))
+    print(model.predict_class([1, 3, 1, 0]))
+    print(model.predict_class([2, 2, 0, 0]))
+    print(model.predict_class([1, 2, 3, 2]))
+    print(model.predict_class([1, 0, 2, 3]))
 
 
 if __name__ == "__main__":
