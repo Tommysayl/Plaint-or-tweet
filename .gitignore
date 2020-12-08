@@ -137,3 +137,5 @@ dmypy.json
 # Extracted datasets
 datasets/*
 !datasets/sentiment140.zip
+!datasets/imbd/
+!datasets/words_alpha.txt
