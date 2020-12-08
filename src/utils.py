@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 import sys
+import re
 
 @contextmanager
 def disable_exception_traceback():
@@ -11,3 +12,12 @@ def disable_exception_traceback():
     sys.tracebacklimit = 0
     yield
     sys.tracebacklimit = default_value  # revert changes
+
+def reduce_lengthening(text):
+    """
+    Replace repeated character sequences of length 3 or greater with sequences
+    of length 3.
+    Source: NLTK
+    """
+    pattern = re.compile(r"(.)\1{2,}")
+    return pattern.sub(r"\1\1\1", text)

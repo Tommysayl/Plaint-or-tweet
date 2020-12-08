@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 import os
-from utils import disable_exception_traceback
+from utils import disable_exception_traceback, reduce_lengthening
 import spacy
 from collections import namedtuple
 from typing import Generator, List
 import re
 from urlextract import URLExtract
+from string import punctuation
 
 DatasetIstance = namedtuple("DatasetIstance", "tokens label")
 
@@ -54,6 +55,7 @@ class DatasetReader(Singleton, ABC):
             self._nlp = spacy.load("en_core_web_sm", disable=["tagger", "parser", "ner"])
             sentencizer = self._nlp.create_pipe("sentencizer")
             self._nlp.add_pipe(sentencizer)
+            self.nlp.Defaults.stop_words |= set(punctuation)    # not sure if it's worth
         return self._nlp
 
     def docs(self) -> DatasetIstance:
@@ -83,6 +85,5 @@ class DatasetReader(Singleton, ABC):
             for url in extractor.find_urls(span):
                 span = span.replace(url, "")
         if correct_typos:
-            # TODO: implement this
-            pass
+            span = reduce_lengthening(span)
         return re.sub(' +', ' ', span)
