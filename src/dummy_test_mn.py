@@ -1,8 +1,30 @@
 import numpy as np
-import collections, re
 import pandas as pd
 import random
+from CategoricalNaiveBayes import CategoricalNaiveBayes
 from MultinomialNaiveBayes import MultinomialNaiveBayes
+
+
+def test_binary_cat():
+
+    X = np.array(
+        [
+            [1, 0, 1, 1],
+            [0, 0, 1, 1],
+            [1, 0, 0, 0],
+            [0, 0, 1, 0],
+            [1, 1, 0, 1],
+            [0, 1, 1, 1],
+            [0, 0, 0, 1],
+            [1, 1, 0, 0],
+        ]
+    )
+
+    y = np.array([1, 1, 0, 1, 0, 1, 1, 0])
+
+    model = CategoricalNaiveBayes()
+    model.train(X, y)
+    print(model.predict_class([0, 0, 1, 1]))
 
 
 def test_binary():
@@ -25,6 +47,34 @@ def test_binary():
     model = MultinomialNaiveBayes()
     model.train(X, y)
     print(model.predict_class([0, 0, 1, 1]))
+    print(model.predict_class([1, 0, 0, 0]))
+    print(model.predict_class([0, 0, 1, 0]))
+
+
+def test_categorical():
+
+    X = np.array(
+        [
+            [2, 3, 1, 0],
+            [0, 0, 3, 3],
+            [1, 2, 0, 0],
+            [3, 3, 0, 1],
+            [0, 1, 2, 2],
+            [0, 0, 1, 1],
+            [0, 2, 3, 3],
+            [1, 3, 1, 0],
+        ]
+    )
+
+    y = np.array([0, 1, 0, 0, 1, 1, 1, 0])
+
+    model = CategoricalNaiveBayes()
+    model.train(X, y)
+    print(model.predict_class([0, 0, 0, 3]))
+    print(model.predict_class([1, 3, 1, 0]))
+    print(model.predict_class([2, 2, 0, 0]))
+    print(model.predict_class([1, 2, 3, 2]))
+    print(model.predict_class([1, 0, 2, 3]))
 
 
 def test_multinomial():
@@ -58,7 +108,7 @@ def extreme_test():
     n_feat = 10000  # Like 10k words of English vocabulary
     X = np.array([[random.randint(0, 5) for j in range(n_feat)] for i in range(n_inst)])
     y = np.array([random.randint(0, 1) for i in range(n_inst)])
-    model = MultinomialNaiveBayes()
+    model = CategoricalNaiveBayes()
     model.train(X, y)
 
     for i in range(10):
@@ -100,7 +150,7 @@ def imbd_test():
             else:
                 X[i][j] = 0
 
-    model = MultinomialNaiveBayes()
+    model = CategoricalNaiveBayes()
     model.train(X.astype(int), y.astype(int))
 
     # Testing
@@ -140,6 +190,8 @@ def imbd_test():
 
 
 if __name__ == "__main__":
-    # test_multinomial()
-    # extreme_test()
-    imbd_test()
+    # test_categorical()
+    test_multinomial()
+# test_binary()
+# extreme_test()
+# imbd_test()
