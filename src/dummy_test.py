@@ -8,9 +8,8 @@ print("Preprocessing test --- START\n")
 ds = TwitterDSReader()
 ds.read_from_file()
 for i, tweet in enumerate(ds.docs()):
-    for sentence in tweet.sentences:
-        for token in sentence:
-            print(token, token.lemma_)
+    for token in tweet.tokens:
+        print(token, token.lemma_)
     if i==0: break
 
 print("\nPreprocessing test --- END\n")
