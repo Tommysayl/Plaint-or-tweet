@@ -34,7 +34,8 @@ class DatasetBagOfWords():
         df = pd.read_csv(path)
         self.corpus = df.iloc[:,2].values
         self.y = df['Label'].values
-
+    
+    '''
     def bag_of_words(self, perc, start=0, ngram=(1,1)):
         # Be careful to not overlap 
         #assert ngram[0] == ngram[1], "Incostintent N-gram!" # without it still works but is strange
@@ -67,7 +68,8 @@ class DatasetBagOfWords():
         self.y = df['Label'].values
         self.X = df.iloc[:, 2:].values
         self.vocabulary = dict( (label, i) for i, label in enumerate(df.columns[2:]) )
-
+    '''
+    
     def train(self, perc, ngram=(1,1)):
         assert ngram[0] == ngram[1], "Incostintent N-gram!" # without it still works but is strange
         assert perc >= 0 and perc <= 1, "Wrong train percentage!"
