@@ -1,7 +1,7 @@
 import numpy as np
-from BernoulliNaiveBayes import BernoulliNaiveBayes
+from src.models.BernoulliNaiveBayes import BernoulliNaiveBayes
 import math
-from TwitterDSReader import TwitterDSReader
+from src.datasets.TwitterDSReader import TwitterDSReader
 
 print("Preprocessing test --- START\n")
 

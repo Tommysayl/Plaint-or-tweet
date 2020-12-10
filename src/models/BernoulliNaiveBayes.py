@@ -1,4 +1,4 @@
-from StableNaiveBayes import StableNaiveBayes
+from src.models.StableNaiveBayes import StableNaiveBayes
 import numpy as np
 
 '''

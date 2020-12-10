@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import random
-from CategoricalNaiveBayes import CategoricalNaiveBayes
-from MultinomialNaiveBayes import MultinomialNaiveBayes
+from src.models.CategoricalNaiveBayes import CategoricalNaiveBayes
+from src.models.MultinomialNaiveBayes import MultinomialNaiveBayes
 
 
 def test_binary_cat():

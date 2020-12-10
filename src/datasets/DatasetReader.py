@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from utils import disable_exception_traceback, reduce_lengthening
+from src.utils import disable_exception_traceback, reduce_lengthening
 import spacy
 from collections import namedtuple
 from typing import Generator, List
