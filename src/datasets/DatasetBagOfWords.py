@@ -92,3 +92,4 @@ class DatasetBagOfWords():
         print(model.count_y_1)
         print(model.count_x_1_y_1)
         print(model.count_x_1_y_0)
+        
