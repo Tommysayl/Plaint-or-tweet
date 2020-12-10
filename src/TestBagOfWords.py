@@ -1,16 +1,20 @@
-from BernoulliNaiveBayes import BernoulliNaiveBayes
 from DatasetBagOfWords import DatasetBagOfWords
+import math
 from TwitterDSReader import TwitterDSReader
 
+
 bow = DatasetBagOfWords()
-bow.bag_of_words(TwitterDSReader())
+bow.load_preprocessing('bow_preprocess.csv')
+bow.train(0.1)
 
-bow.save('bow.csv')
+#corpus = bow.load_preprocessing('bow_preprocess.csv')
 
-#print('Write a tweet:')
-#tweet = input()
+#bow.train(0.001)
 
-#print(bow.embed(tweet))
+#print(len(bow.X))
+#print(len(bow.y))
 
-#model = BernoulliNaiveBayes()
-#model.train(bow.X, bow.y)
+#bow.save_bag_of_words('bow.csv')
+
+#print(bow.X)
+#print(bow.vocabulary)
