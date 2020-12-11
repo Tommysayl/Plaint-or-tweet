@@ -2,10 +2,11 @@ import math, time
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import binarize
 from sklearn.metrics import accuracy_score, f1_score
-from src.models.BernoulliNaiveBayes import BernoulliNaiveBayes
+from src.models.MultinomialNaiveBayesSparse import MultinomialNaiveBayes
 from src.datasets.TwitterDSReader import TwitterDSReader
 
 def preprocessing(self, ds):
@@ -44,19 +45,18 @@ if __name__ == '__main__':
     print('train:', X_train.shape)
     print('test:', X_test.shape)
     
+    #vectorizer = TfidfVectorizer(ngram_range=(1,1)) #(2,2) for bigrams and so on
     vectorizer = CountVectorizer(ngram_range=(1,1)) #(2,2) for bigrams and so on
     vectorizer.fit(X_train.astype('str'))
     print('vectorizer trained')
     
     X_train_bow = vectorizer.transform(X_train.astype('str'))
-    binarize(X_train_bow, copy=False)
     print('train data vectorized')
-    model = BernoulliNaiveBayes()
+    model = MultinomialNaiveBayes()
     model.train(X_train_bow, y_train)
     print('model trained')
     
     X_test_bow = vectorizer.transform(X_test.astype('str'))
-    binarize(X_test_bow, copy=False)
     print('test data vectorized')
     y_pred = model.sparse_predict_class(X_test_bow)
     print('accuracy:', accuracy_score(y_test, y_pred))

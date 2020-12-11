@@ -1,5 +1,6 @@
 import numpy as np
 from src.models.BernoulliNaiveBayes import BernoulliNaiveBayes
+from src.models.MultinomialNaiveBayesSparse import MultinomialNaiveBayes
 import math
 from src.datasets.TwitterDSReader import TwitterDSReader
 from scipy.sparse import csr_matrix
@@ -18,6 +19,7 @@ for i, tweet in enumerate(ds.docs()):
 print("\nPreprocessing test --- END\n")
 '''
 
+'''
 y = np.array([1, 1, 0, 1, 0])
 print(y, y.shape)
 X = [[1, 0, 14, 1],
@@ -39,6 +41,47 @@ print(model.m)
 print(model.count_y_1)
 print(model.count_x_1_y_1)
 print(model.count_x_1_y_0)
+
+print(model.p_y(1), model.p_y(0))
+print(model.p_xi_given_y([0, 0, 0, 0], 0, 0), model.p_xi_given_y([0, 0, 0, 0], 0, 1))
+
+print(model.log_prob_y_given_x([0, 0, 0, 0], 0), model.log_prob_y_given_x([0, 0, 0, 0], 1))
+print(model.predict_class([0, 0, 0, 0]))
+
+print(model.log_prob_y_given_x([1, 0, 0, 1], 0), model.log_prob_y_given_x([1, 0, 0, 1], 1))
+print(model.predict_class([1, 0, 0, 1]))
+
+print(model.log_prob_y_given_x([0, 1, 1, 0], 0), model.log_prob_y_given_x([0, 1, 1, 0], 1))
+print(model.predict_class([0, 1, 1, 0]))
+
+X_test = [[0, 0, 0, 0],
+          [1, 0, 0, 1],
+          [0, 1, 1, 0]]
+X_test = csr_matrix(np.array(X_test))
+print(model.sparse_predict_class(X_test))
+'''
+
+y = np.array([1, 1, 0, 1, 0])
+print(y, y.shape)
+X = [[1, 0, 14, 1],
+    [0, 0, 15, 1],
+    [12, 0, 0, 0],
+    [0, 0, 1, 0],
+    [1, 14, 1, 1]]
+X = np.array(X)
+X = csr_matrix(X)
+print(X)
+print(X.shape)
+
+
+model = MultinomialNaiveBayes()
+model.train(X, y)
+print(model.m)
+print(model.count_y_1)
+print(model.count_x_1_y_1)
+print(model.count_x_1_y_0)
+print(model.count_y_0_words)
+print(model.count_y_1_words)
 
 print(model.p_y(1), model.p_y(0))
 print(model.p_xi_given_y([0, 0, 0, 0], 0, 0), model.p_xi_given_y([0, 0, 0, 0], 0, 1))
