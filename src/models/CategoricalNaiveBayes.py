@@ -69,8 +69,8 @@ class CategoricalNaiveBayes(StableNaiveBayes):
                     self.count_y_1 + X.shape[1]
                 )  # same here
 
-    def p_xi_given_y(self, X, i, y):
-        return self.th2[y][X[i]][i]
+    def p_xi_given_y(self, xi, i, y):
+        return self.th2[y][xi][i]
 
     def p_y(self, y):
         return self.th1[y]

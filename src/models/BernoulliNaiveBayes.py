@@ -27,18 +27,18 @@ class BernoulliNaiveBayes(StableNaiveBayes):
 
         y_col = np.transpose([y]) #y as a column vector
         sm_rows = X.multiply(csr_matrix(y_col)).sum(axis=0) #multiply each column of X by y (ie: consider only class 1 samples), and then sum all the rows
-        self.count_x_1_y_1 += sm_rows.A1 #sm_rows is numpy matrix, take only the row
+        self.count_x_1_y_1 += sm_rows.A1 #sm_rows is numpy matrix, A1 takes only the row
         sm_rows = (X.multiply(csr_matrix(1 - y_col))).sum(axis=0) #multiply each column of X by (1 - y) (ie: consider only class 0 samples), and then sum all the rows
         self.count_x_1_y_0 += sm_rows.A1
 
-    def p_xi_given_y(self, X, i, y):
+    def p_xi_given_y(self, xi, i, y):
         p1 = 0
         if y == 1:
             p1 = (self.count_x_1_y_1[i] + 1) / (self.count_y_1 + 2) #+1/+2 are due to Laplace smoothing
         else:
             p1 = (self.count_x_1_y_0[i] + 1) / (self.m - self.count_y_1 + 2) #+1/+2 are due to Laplace smoothing
 
-        return p1 if X[i] == 1 else (1 - p1)
+        return p1 if xi == 1 else (1 - p1)
 
     def p_y(self, y):
         p1 = (self.count_y_1 + 1) / (self.m + 2) #+1/+2 are due to Laplace smoothing

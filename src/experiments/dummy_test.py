@@ -39,13 +39,21 @@ print(model.m)
 print(model.count_y_1)
 print(model.count_x_1_y_1)
 print(model.count_x_1_y_0)
-'''
+
 print(model.p_y(1), model.p_y(0))
 print(model.p_xi_given_y([0, 0, 0, 0], 0, 0), model.p_xi_given_y([0, 0, 0, 0], 0, 1))
 
-print(math.exp(model.log_prob_y_given_x([0, 0, 0, 0], 0)), math.exp(model.log_prob_y_given_x([0, 0, 0, 0], 1)))
+print(model.log_prob_y_given_x([0, 0, 0, 0], 0), model.log_prob_y_given_x([0, 0, 0, 0], 1))
 print(model.predict_class([0, 0, 0, 0]))
 
-print(math.exp(model.log_prob_y_given_x([1, 0, 0, 1], 0)), math.exp(model.log_prob_y_given_x([1, 0, 0, 1], 1)))
+print(model.log_prob_y_given_x([1, 0, 0, 1], 0), model.log_prob_y_given_x([1, 0, 0, 1], 1))
 print(model.predict_class([1, 0, 0, 1]))
-'''
+
+print(model.log_prob_y_given_x([0, 1, 1, 0], 0), model.log_prob_y_given_x([0, 1, 1, 0], 1))
+print(model.predict_class([0, 1, 1, 0]))
+
+X_test = [[0, 0, 0, 0],
+          [1, 0, 0, 1],
+          [0, 1, 1, 0]]
+X_test = csr_matrix(np.array(X_test))
+print(model.sparse_predict_class(X_test))

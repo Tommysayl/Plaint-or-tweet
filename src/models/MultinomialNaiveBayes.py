@@ -57,8 +57,11 @@ class MultinomialNaiveBayes(StableNaiveBayes):
                 self.count_y_1 + X.shape[1]
             )  # same here
 
-    def p_xi_given_y(self, X, i, y):
+    def p_xi_given_y(self, xi, i, y):
         return self.th2[y][i]
+    
+    def log_p_xi_given_y(self, xi, i, y):
+        return xi * super().log_p_xi_given_y(xi, i, y)
 
     def p_y(self, y):
         return self.th1[y]

@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import binarize
+from sklearn.metrics import accuracy_score
 from src.models.BernoulliNaiveBayes import BernoulliNaiveBayes
 from src.datasets.TwitterDSReader import TwitterDSReader
 
@@ -55,10 +56,11 @@ if __name__ == '__main__':
     model = BernoulliNaiveBayes()
     model.train(X_train_bow, y_train)
     print('model trained')
-
-    print(model.m)
-    print(model.count_y_1)
-    print(model.count_x_1_y_0)
-    print(model.count_x_1_y_1)
+    
+    X_test_bow = vectorizer.transform(X_test.astype('str'))
+    binarize(X_test_bow, copy=False)
+    print('test data vectorized')
+    y_pred = model.sparse_predict_class(X_test_bow)
+    print('accuracy:', accuracy_score(y_test, y_pred))
 
     print('seconds needed:', (time.time() - start_time))
