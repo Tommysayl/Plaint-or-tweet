@@ -12,17 +12,17 @@ class Embedder():
         df = pd.read_csv(csv_path)
         self.corpus = df.iloc[:,2].values
         self.y = df['Label'].values
-        return self.corpus, self.y
+        return self.corpus
         
 
     def embed_ft (self, csv_path , size, window, min_count, workers, sg):
-        corpus, tags = self.load_corpus(csv_path)
+        corpus = self.load_corpus(csv_path)
         word_corpus = [sentence.lower().split() for sentence in corpus if isinstance(sentence, str)]
         model = FastText(sentences = word_corpus, size = size, window = window, min_count = min_count, workers = workers, sg = sg)
         return model
 
     def embed_w2v (self,csv_path, size, window, min_count, workers, sg):
-        corpus, tags = self.load_corpus(csv_path)
+        corpus = self.load_corpus(csv_path)
         word_corpus = [sentence.lower().split() for sentence in corpus if isinstance(sentence, str)]
         model = Word2Vec(sentences = word_corpus, size = size, window = window, min_count = min_count, workers = workers, sg = sg)
         return model  
