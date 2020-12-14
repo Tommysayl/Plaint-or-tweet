@@ -190,8 +190,8 @@ def imbd_test():
 
 
 if __name__ == "__main__":
-    # test_categorical()
-    test_multinomial()
+    test_categorical()
+    # test_multinomial()
 # test_binary()
 # extreme_test()
 # imbd_test()
