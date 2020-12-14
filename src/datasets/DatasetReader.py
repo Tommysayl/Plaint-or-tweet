@@ -82,8 +82,9 @@ class DatasetReader(Singleton, ABC):
     def _reduce_span_noise(self, span, extractor, remove_links, correct_typos) -> str:
         ''' Apply some grammar corrections to fix user typos or remove URLs from text. '''
         if remove_links:
-            for url in extractor.find_urls(span):
-                span = span.replace(url, "")
+            span = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', '', span)
+            #for url in extractor.find_urls(span):
+                #span = span.replace(url, "")
         if correct_typos:
             span = reduce_lengthening(span)
         return re.sub(' +', ' ', span)
