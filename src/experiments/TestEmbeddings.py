@@ -35,8 +35,8 @@ def load_preprocessing(path):
 if __name__ == '__main__':
     start_time = time.time()
 
-    OUTPUT_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
-    LOAD_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
+    OUTPUT_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
+    LOAD_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
 
     SEED = 42
     TRAIN_PERC = 0.8
@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     X, y = load_preprocessing('bow_preprocess.csv')
     y = y // 4 #labels in {0, 1}
-    print('preprocessing done')
+    print('preprocessing done', (time.time() - start_time))
 
     X_tmp = []
     y_tmp = []
@@ -58,28 +58,28 @@ if __name__ == '__main__':
     y = np.array(y_tmp)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=TRAIN_PERC, random_state=SEED)
-    print('train:', X_train.shape)
-    print('test:', X_test.shape)
+    print('train:', X_train.shape, (time.time() - start_time))
+    print('test:', X_test.shape, (time.time() - start_time))
 
     logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s", datefmt= '%H:%M:%S', level=logging.INFO) #gensim logging
     embedder = Embedder()
     embedder.train_ft(X_train, size = numFeaturesEmbedding, load_path=LOAD_EMBEDDER)
     if OUTPUT_EMBEDDER is not None:
         embedder.model.save(OUTPUT_EMBEDDER)
-    print('embedder trained')
+    print('embedder trained', (time.time() - start_time))
     
     X_train_vec = embedder.sentence_embedding(X_train)
     minMaxPair = np.apply_along_axis(lambda x: [min(x), max(x)], 0, X_train_vec) #find (min, max) for each column of X_train_vec
     X_train_vec = np.array([discretizeVector(v, minMaxPair[0][i], minMaxPair[1][i], numBinsPerFeature[i]) for i,v in enumerate(X_train_vec.T)]).T #discretize each column
-    print('train embeddings computed')
+    print('train embeddings computed', (time.time() - start_time))
     model = CategoricalNaiveBayes()
     model.train(X_train_vec, y_train)
-    print('model trained')
+    print('model trained', (time.time() - start_time))
 
     X_test_vec = embedder.sentence_embedding(X_test)
     #note: we use minMaxPair computed in training
     X_test_vec = np.array([discretizeVector(v, minMaxPair[0][i], minMaxPair[1][i], numBinsPerFeature[i]) for i,v in enumerate(X_test_vec.T)]).T #discretize each column
-    print('test embeddings computed')
+    print('test embeddings computed', (time.time() - start_time))
     y_pred = model.multi_predict_class(X_test_vec)
     print('accuracy:', accuracy_score(y_test, y_pred))
     print('f1-score:', f1_score(y_test, y_pred))
