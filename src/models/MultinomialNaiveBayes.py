@@ -59,7 +59,7 @@ class MultinomialNaiveBayes(StableNaiveBayes):
 
     def p_xi_given_y(self, xi, i, y):
         return self.th2[y][i]
-    
+
     def log_p_xi_given_y(self, xi, i, y):
         return xi * super().log_p_xi_given_y(xi, i, y)
 

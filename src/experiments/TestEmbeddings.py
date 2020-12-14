@@ -1,4 +1,5 @@
 import math, time
+import logging
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -34,6 +35,9 @@ def load_preprocessing(path):
 if __name__ == '__main__':
     start_time = time.time()
 
+    OUTPUT_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
+    LOAD_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
+
     SEED = 42
     TRAIN_PERC = 0.8
     
@@ -44,16 +48,28 @@ if __name__ == '__main__':
     y = y // 4 #labels in {0, 1}
     print('preprocessing done')
 
+    X_tmp = []
+    y_tmp = []
+    for i in range(len(X)):
+        if len(str(X[i]).split()) > 0:
+            X_tmp.append(X[i])
+            y_tmp.append(y[i])
+    X = np.array(X_tmp)
+    y = np.array(y_tmp)
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=TRAIN_PERC, random_state=SEED)
     print('train:', X_train.shape)
     print('test:', X_test.shape)
-    
-    Embedder embedder = Embedder()
-    embedder.train_ft(X_train, size = numFeaturesEmbedding)
+
+    logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s", datefmt= '%H:%M:%S', level=logging.INFO) #gensim logging
+    embedder = Embedder()
+    embedder.train_ft(X_train, size = numFeaturesEmbedding, load_path=LOAD_EMBEDDER)
+    if OUTPUT_EMBEDDER is not None:
+        embedder.model.save(OUTPUT_EMBEDDER)
     print('embedder trained')
     
     X_train_vec = embedder.sentence_embedding(X_train)
-    minMaxPair = np.apply_along_axis(lambda x: (min(x), max(x)), 0, X_train_vec) #find (min, max) for each column of X_train_vec
+    minMaxPair = np.apply_along_axis(lambda x: [min(x), max(x)], 0, X_train_vec) #find (min, max) for each column of X_train_vec
     X_train_vec = np.array([discretizeVector(v, minMaxPair[0][i], minMaxPair[1][i], numBinsPerFeature[i]) for i,v in enumerate(X_train_vec.T)]).T #discretize each column
     print('train embeddings computed')
     model = CategoricalNaiveBayes()
