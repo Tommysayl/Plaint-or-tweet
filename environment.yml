@@ -13,6 +13,9 @@ dependencies:
   - spacy
   - spacy-lookups-data
   - spacy-model-en_core_web_sm
+  - scipy
+  - scikit-learn
+  - gensim
   - pip
   - pip:
     - urlextract

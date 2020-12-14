@@ -47,7 +47,7 @@ class BernoulliNaiveBayes(StableNaiveBayes):
         p1 = (self.count_y_1 + 1) / (self.m + 2) #+1/+2 are due to Laplace smoothing
         return p1 if y == 1 else (1 - p1)
     
-    def sparse_predict_class(self, X):
+    def multi_predict_class(self, X):
         ''' X must be a sparse csr matrix (each row is a test sample), this will output a numpy array with the predicted classes for each sample '''
 
         lpx0_y0 = np.array([ self.log_p_xi_given_y(0, i, 0) for i in range(X.shape[1]) ]) #P(x_i=0|y=0) for each i

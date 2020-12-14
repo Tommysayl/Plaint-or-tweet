@@ -36,11 +36,11 @@ class MultinomialNaiveBayes(BernoulliNaiveBayes):
     def log_p_xi_given_y(self, xi, i, y):
         return xi * super().log_p_xi_given_y(xi, i, y)
     
-    def sparse_predict_class(self, X):
+    def multi_predict_class(self, X):
         # note that this works: 
         # even if we consider only the case for xi=0 (which will always give 0 in log-prob) and xi=1
         # when we do the dot product with X, we multiply each result for xi=1 by Xri which will result in adding log_p_xi_given_y for the correct Xri
-        #return super().sparse_predict_class(X)
+        #return super().multi_predict_class(X)
 
         #calling super is equivalent to this: (but slightly less perfoming)
         lpx1_y0 = np.array([ self.log_p_xi_given_y(1, i, 0) for i in range(X.shape[1]) ]) #P(x_i=1|y=0) for each i
