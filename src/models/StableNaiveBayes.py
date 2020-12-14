@@ -25,8 +25,8 @@ class StableNaiveBayes(ABC):
         pass
     
     @abstractmethod
-    def sparse_predict_class(self, X):
-        ''' predict classes (as a numpy array) for sparse matrix test data X (each row of the matrix is a test sample)'''
+    def multi_predict_class(self, X):
+        ''' predict classes (as a numpy array) for a matrix test data X (each row of the matrix is a test sample) [it might be a sparse matrix, or a numpy array if is small enough]'''
         pass
 
     def log_p_xi_given_y(self, xi, i, y):

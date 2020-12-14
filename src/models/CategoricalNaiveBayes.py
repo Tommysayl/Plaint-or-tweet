@@ -91,6 +91,6 @@ class CategoricalNaiveBayes(StableNaiveBayes):
 
     def p_y(self, y):
         return self.th1[y]
-
-    def sparse_predict_class(self, X):
-        pass
+    
+    def multi_predict_class(self, X):
+        return np.array([self.predict_class(x) for x in X]) #slow!!!

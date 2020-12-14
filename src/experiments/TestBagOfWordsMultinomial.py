@@ -58,7 +58,7 @@ if __name__ == '__main__':
     
     X_test_bow = vectorizer.transform(X_test.astype('str'))
     print('test data vectorized')
-    y_pred = model.sparse_predict_class(X_test_bow)
+    y_pred = model.multi_predict_class(X_test_bow)
     print('accuracy:', accuracy_score(y_test, y_pred))
     print('f1-score:', f1_score(y_test, y_pred))
 
