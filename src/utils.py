@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 import sys
 import re
+import numpy as np
 
 @contextmanager
 def disable_exception_traceback():
@@ -21,3 +22,17 @@ def reduce_lengthening(text):
     """
     pattern = re.compile(r"(.)\1{2,}")
     return pattern.sub(r"\1\1\1", text)
+
+def discretizeVector(x, m, M, bins):
+    """
+    x = vector
+    m = minimum to consider for discretization
+    M = maximum to consider for discretization
+    bins = number of bins to discretize
+    returns discretized vector (each element is in [0, bins-1])
+    """
+    #values < m are mapped to 0
+    #values > M are mapped to bins-1
+    binWidth = (M - m) / bins
+    binsArr = np.arange(1, bins) * binWidth + m
+    return np.digitize(x, binsArr)
