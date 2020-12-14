@@ -31,7 +31,7 @@ class Embedder():
         model = FastText(sentences = word_corpus, size = size, window = window, min_count = min_count, workers = workers, sg = sg)
         return model
 
-    def embed_w2v (self, csv_path , size = 100, window = 5, min_count = 1, workers = 1, sg = 0):
+    def embed_w2v (self, csv_path , size = 100, window = 5, min_count = 1, workers = 1, sg = 1):
         '''
         Input: Path to csv;
         size = embedding vector size;
@@ -53,6 +53,7 @@ class Embedder():
         we want to discretize our values to. 
         Output; Dictionary where Keys = words, values = discretized embedded vectors
         '''
+        n_ranges -= 1
         support_dict = {}
         vector_dict = {}
         for word in model.wv.vocab:
@@ -77,6 +78,24 @@ class Embedder():
         max_a = max(array)
         min_a = min(array)
         return max_a, min_a
+
+    def avarage_vector(self, vects):
+        mean_v = np.mean(vects, axis= 0)
+        return mean_v
+
+
+    def sentence_embedding(self, corpus, model):
+
+        sents = [[model.wv[word] for word in str(sent).lower().split()] for sent in corpus]
+        embedded_sents = [avarage_vector(sent) for sent in sents]
+        return None
+
+
+            
+
+
+             
+
         
 
 
