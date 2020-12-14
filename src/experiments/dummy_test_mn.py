@@ -58,7 +58,7 @@ def test_categorical():
             [2, 3, 1, 0],
             [0, 0, 3, 3],
             [1, 2, 0, 0],
-            [3, 3, 0, 1],
+            [2, 3, 0, 1],
             [0, 1, 2, 2],
             [0, 0, 1, 1],
             [0, 2, 3, 3],
@@ -68,7 +68,7 @@ def test_categorical():
 
     y = np.array([0, 1, 0, 0, 1, 1, 1, 0])
 
-    model = CategoricalNaiveBayes()
+    model = CategoricalNaiveBayes(cat_nums=[3, 4, 4, 4])
     model.train(X, y)
     print(model.predict_class([0, 0, 0, 3]))
     print(model.predict_class([1, 3, 1, 0]))
@@ -105,7 +105,7 @@ def test_multinomial():
 
 def extreme_test():
     n_inst = 10000  # Like 10k tweets
-    n_feat = 10000  # Like 10k words of English vocabulary
+    n_feat = 1000  # Like 10k words of English vocabulary
     X = np.array([[random.randint(0, 5) for j in range(n_feat)] for i in range(n_inst)])
     y = np.array([random.randint(0, 1) for i in range(n_inst)])
     model = CategoricalNaiveBayes()
@@ -117,10 +117,10 @@ def extreme_test():
 
 def imbd_test():
     # using https://www.kaggle.com/columbine/imdb-dataset-sentiment-analysis-in-csv-format
-    tr = pd.read_csv("../datasets/imbd/Train.csv")
+    tr = pd.read_csv("../../datasets/imbd/Train.csv")
 
     # using https://github.com/dwyl/english-words/blob/master/words_alpha.zip
-    words = pd.read_csv("../datasets/words_alpha.txt", header=None, encoding="utf-8")
+    words = pd.read_csv("../../datasets/words_alpha.txt", header=None, encoding="utf-8")
 
     dic = {}
     i = 0
@@ -191,7 +191,8 @@ def imbd_test():
 
 if __name__ == "__main__":
     test_categorical()
+    print("End categorical")
     # test_multinomial()
-# test_binary()
-# extreme_test()
+    # test_binary()
+    extreme_test()
 # imbd_test()

@@ -17,7 +17,7 @@ def disable_exception_traceback():
 def reduce_lengthening(text):
     """
     Replace repeated character sequences of length 3 or greater with sequences
-    of length 3.
+    of length 2.
     Source: NLTK
     """
     pattern = re.compile(r"(.)\1{2,}")

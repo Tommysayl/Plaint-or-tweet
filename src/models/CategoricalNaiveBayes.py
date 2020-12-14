@@ -9,7 +9,12 @@ and each y is in {0,1}
 
 
 class CategoricalNaiveBayes(StableNaiveBayes):
-    def __init__(self):
+    # cat_nums is the list of numbers of possible categories for
+    # every feature (it must be of the same length as the feature
+    # vector; categories start at 0, so make sure to pass
+    # (max necessary category) + 1).
+    def __init__(self, cat_nums=None):
+        self.cat_nums = cat_nums
         # Dataset dimension
         self.m = 0
         # Number of training examples where y=1
@@ -20,7 +25,7 @@ class CategoricalNaiveBayes(StableNaiveBayes):
         # 1D vector -> [p_y0, p_y1]
         self.th1 = []
 
-        # 3D vector [yi][categorical_value][feature_index]
+        # 3D vector [yi][feature_index][categorical_value]
         # -> [[px00_given_y0, px10_given_y0, px20_given_y0, ... ],
         #      [px01_given_y0, px11_given_y0, px21_given_y0, ... ],
         #       ...],
@@ -35,7 +40,11 @@ class CategoricalNaiveBayes(StableNaiveBayes):
     # Trains the two model parameter types:
     # theta1[i] -> N(yi)/m
     # theta2[i][j][l] -> N(xlj, yi)/N(yi)
-    def train(self, X, y):
+    def train(
+        self,
+        X,
+        y,
+    ):
 
         self.m = len(y)
         self.count_y_1 = np.count_nonzero(y)  # nonzero == 1
@@ -45,27 +54,37 @@ class CategoricalNaiveBayes(StableNaiveBayes):
         self.th1.append((self.count_y_0 + 1) / (self.m + 2))
         self.th1.append((self.count_y_1 + 1) / (self.m + 2))
 
-        # Number categorical values
-        cat_num = np.max(X) + 1  # Also considering 0 as a value
+        # Numbers categorical values
+        cat_nums = (
+            self.cat_nums
+            if self.cat_nums is not None
+            else [np.max(X[:, i]) + 1 for i in range(X.shape[1])]
+        )  # Also considering 0 as a value
 
         # Initializing theta2
         for i in range(X.shape[1]):
-            self.th2[0].append(np.zeros(cat_num))
-            self.th2[1].append(np.zeros(cat_num))
+            self.th2[0].append(np.zeros(cat_nums[i]))
+            self.th2[1].append(np.zeros(cat_nums[i]))
 
         # Training theta2
+        for j in range(X.shape[1]):
+            for k in range(cat_nums[j]):
+                self.th2[0][j][k] = np.count_nonzero((X[:, j] == k) & (y == 0))
+                self.th2[1][j][k] = np.count_nonzero((X[:, j] == k) & (y == 1))
+        """
         for i in range(self.m):
             # print((i * 100) / self.m, "%")
             for j in range(X.shape[1]):
                 # Obtaining N(xlj, yi)
-                self.th2[y[i]][j][X[i][j]] += 1
+                self.th2[y[i]][j][X[i][j]] += 1"""
 
         # Applying Laplace smoothing
-        add = (1 / cat_num) * X.shape[1]
+        add = (1 / np.array(cat_nums)) * X.shape[1]
         div0 = self.count_y_0 + X.shape[1]
         div1 = self.count_y_1 + X.shape[1]
-        self.th2[0] = (self.th2[0] + add) / div0
-        self.th2[1] = (self.th2[1] + add) / div1
+        for j in range(X.shape[1]):
+            self.th2[0][j] = (self.th2[0][j] + add[j]) / div0
+            self.th2[1][j] = (self.th2[1][j] + add[j]) / div1
 
     def p_xi_given_y(self, xi, i, y):
         return self.th2[y][i][xi]
