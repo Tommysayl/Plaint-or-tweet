@@ -7,6 +7,7 @@ from typing import Generator, List
 import re
 from urlextract import URLExtract
 from string import punctuation
+from src.datasets import TwitterDSReader
 
 DatasetIstance = namedtuple("DatasetIstance", "tokens label")
 
@@ -43,11 +44,11 @@ class DatasetReader(Singleton, ABC):
         if remove_stopwords:
             self._ds = (DatasetIstance(self.clear_stopwords(doc), label) for doc, label in zip(docs, labels))
         else:
-            self._ds = (DatasetIstance([token for token in doc], label) for doc, label in zip(docs, labels))
+            self._ds = (DatasetIstance([token for token in doc if not token.text.isspace()], label) for doc, label in zip(docs, labels))
 
     def clear_stopwords(self, doc) -> List[str]:
         ''' Returns a list of non-stopword tokens. '''
-        return [token for token in doc if token.text not in self.nlp.Defaults.stop_words]
+        return [token for token in doc if token.text not in self.nlp.Defaults.stop_words and not token.text.isspace()]
 
     @property
     def nlp(self):
@@ -62,7 +63,7 @@ class DatasetReader(Singleton, ABC):
         ''' Returns an iterator of [DatasetIstance]s. '''
         if self._ds is None:
             self.read_from_file()
-        return self._ds
+        return (istance for istance in self._ds if len(istance.tokens))
 
     def get_path(self, path) -> str:
         ''' Returns the provided dataset [path] if it exists, otherwise will return the [default_path] of the required dataset.  '''
@@ -80,6 +81,8 @@ class DatasetReader(Singleton, ABC):
         return (self._reduce_span_noise(span, url_extractor, remove_links, correct_typos) for span in text)
 
     def _reduce_span_noise(self, span, extractor, remove_links, correct_typos) -> str:
+        if isinstance(self, TwitterDSReader.TwitterDSReader):
+            span = self._extract_hashtags(span)
         ''' Apply some grammar corrections to fix user typos or remove URLs from text. '''
         if remove_links:
             span = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', '', span)
