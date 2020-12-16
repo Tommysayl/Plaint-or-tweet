@@ -53,7 +53,7 @@ def main(seed = 42, train_perc = 0.8, multinomial=False, tfidf=False, ngram_s=1,
     
     model = BagOfWordsNaiveBayes(multinomial, tfidf, ngram_s, ngram_e) #create the model
     if findBestThreshold: #if you want best threshold, perform kfold 
-        model.kFoldBestThresholdSearch(X_train, y_train, seed, splits=3) #we pass a copy otherwise it will mess up X_train and y_train
+        model.kFoldBestThresholdSearch(X_train, y_train, seed, splits=3) 
     model.train(X_train, y_train) #train the model
     y_score, y_pred = model.perform_test(X_test) #get scores and predictions
     fpr, tpr, thresholds = roc_curve(y_test, y_score) 
