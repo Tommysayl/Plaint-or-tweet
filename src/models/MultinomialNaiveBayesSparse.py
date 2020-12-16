@@ -46,3 +46,9 @@ class MultinomialNaiveBayes(BernoulliNaiveBayes):
         correction = X.dot(lpx1_y) 
         
         return log_prob + correction #we get P(X|y)P(y)
+
+    def reset_params(self):
+        super().reset_params()
+        self.count_y_1_words = 0 
+        self.count_y_0_words = 0 
+        self.d = 0

@@ -59,3 +59,9 @@ class BernoulliNaiveBayes(StableNaiveBayes):
         correction = X.dot(lpx1_y - lpx0_y) #performs: Xri * (P(x_i=1|y) - P(x_i=0|y)) for each row(/test) r, and column(/feature) i (and sums elements on rows)
         
         return log_prob + correction #we get P(X|y)P(y)
+
+    def reset_params(self):
+        self.m = 0
+        self.count_y_1 = 0 
+        self.count_x_1_y_1 = None 
+        self.count_x_1_y_0 = None 

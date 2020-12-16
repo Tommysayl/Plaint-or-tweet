@@ -11,7 +11,7 @@ class StableNaiveBayes(ABC):
     
     @abstractmethod
     def train(self, X, y):
-        ''' X = sparse matrix of training vectors ; y = numpy of classes'''
+        ''' X = sparse matrix of training vectors ; y = numpy array of classes'''
         pass
 
     @abstractmethod
@@ -22,6 +22,11 @@ class StableNaiveBayes(ABC):
     @abstractmethod
     def p_y(self, y):
         ''' compute probability of y '''
+        pass
+    
+    @abstractmethod
+    def reset_params(self):
+        ''' reset parameters (needed for kfold) '''
         pass
 
     def log_p_xi_given_y(self, xi, i, y):

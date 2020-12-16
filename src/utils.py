@@ -36,3 +36,12 @@ def discretizeVector(x, m, M, bins):
     binWidth = (M - m) / bins
     binsArr = np.arange(1, bins) * binWidth + m
     return np.digitize(x, binsArr)
+
+def getBestThreshold(tpr, fpr, thresholds):
+    ''' 
+    tpr = numpy array of true prositive ratios, 
+    fpr = numpy array of false positive ratios
+    threshold = numpy array parallel to tpr and fpr
+    outputs: threshold that maximizes tpr - fpr
+    '''
+    return thresholds[np.argmax(tpr - fpr)]
