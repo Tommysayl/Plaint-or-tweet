@@ -1,4 +1,4 @@
-import math, time
+import math, time, json
 import numpy as np
 import pandas as pd
 import fire
@@ -31,7 +31,7 @@ def load_preprocessing(path):
     y = df['Label'].values
     return corpus, y
 
-def main(seed = 42, train_perc = 0.8, multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, preprocessing_path = 'bow_preprocess.csv'):
+def main(name='', seed = 42, train_perc = 0.8, multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, showTrainingStats=True, export_results_path='experiments/testSingleSplit', preprocessing_path = 'bow_preprocess.csv'):
     start_time = time.time()
 
     print('seed:', seed)
@@ -57,23 +57,50 @@ def main(seed = 42, train_perc = 0.8, multinomial=False, tfidf=False, ngram_s=1,
     model.train(X_train, y_train) #train the model
     y_score, y_pred = model.perform_test(X_test) #get scores and predictions
     fpr, tpr, thresholds = roc_curve(y_test, y_score) 
-    print('accuracy:', accuracy_score(y_test, y_pred)) #print some scores
-    print('f1-score:', f1_score(y_test, y_pred))
-    print('au-roc:', roc_auc_score(y_test, y_score))
+    test_acc = accuracy_score(y_test, y_pred)
+    test_f1 = f1_score(y_test, y_pred)
+    test_auroc = roc_auc_score(y_test, y_score)
+    print('accuracy:', test_acc) #print some scores
+    print('f1-score:', test_f1)
+    print('au-roc:', test_auroc)
 
     #we perform the evalutation over the training set (just to compare with the test)
-    y_score_train, y_pred_train = model.perform_test(X_train)
-    fpr_train, tpr_train, thresholds_train = roc_curve(y_train, y_score_train)
-    print('accuracy:', accuracy_score(y_train, y_pred_train))
-    print('f1-score:', f1_score(y_train, y_pred_train))
-    print('au-roc:', roc_auc_score(y_train, y_score_train))
+    if showTrainingStats:
+        y_score_train, y_pred_train = model.perform_test(X_train)
+        fpr_train, tpr_train, thresholds_train = roc_curve(y_train, y_score_train)
+        print('accuracy:', accuracy_score(y_train, y_pred_train))
+        print('f1-score:', f1_score(y_train, y_pred_train))
+        print('au-roc:', roc_auc_score(y_train, y_score_train))
 
     print('seconds needed:', (time.time() - start_time))
 
+    exportStats(export_results_path, name, seed, train_perc, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, test_acc, test_f1, test_auroc, fpr, tpr)
+
     plt.plot(fpr, tpr, label='test roc')
-    plt.plot(fpr_train, tpr_train, label='train roc')
+    if showTrainingStats:
+        plt.plot(fpr_train, tpr_train, label='train roc')
     plt.legend()
     plt.show()
+
+def exportStats(path, name, seed, train_perc, multinomial, tfidf, ngram_s, ngram_e, findTh, accuracy, f1, auroc, fpr, tpr):
+    if path is None:
+        return
+    path += '_'+name+'_'+str(time.time())
+    outd = {'name': name,
+            'seed': seed, 
+            'train_perc': train_perc,
+            'multinomial': multinomial,
+            'tfidf': tfidf, 
+            'ngram_s': ngram_s,
+            'ngram_e': ngram_e,
+            'findBestThreshold:': findTh,
+            'accuracy': accuracy,
+            'f1-score': f1,
+            'auroc': auroc,
+            'fpr': fpr.tolist(),
+            'tpr': tpr.tolist()}
+    with open(path, 'w') as fout:
+        fout.write(json.dumps(outd))
 
 if __name__ == '__main__':
     fire.Fire(main)

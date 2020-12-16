@@ -32,7 +32,7 @@ class StableNaiveBayes(ABC):
     def log_p_xi_given_y(self, xi, i, y):
         ''' just log of p_xi_given_y (some implementations might want to override it, for example
             to pass from exponentiation inside p_xi_given_y to multiplication here)'''
-        return log(self.p_xi_given_y(xi, i, y))
+        return np.log(self.p_xi_given_y(xi, i, y))
     
     def log_prob_y_given_x(self, X, y):
         ''' computes (dropping the denominator) log(P(y|X)) = 
