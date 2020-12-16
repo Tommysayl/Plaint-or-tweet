@@ -52,6 +52,6 @@ class Embedder():
         Input: corpus is a list of sentences
         Output: numpy array, i-th row is embedding of sentence i
         '''
-        sents = [[self.model.wv[word] if word in model.wv else np.zeros(100) for word in str(sent).lower().split()] for sent in corpus]
+        sents = [[self.model.wv[word] if word in self.model.wv else np.zeros(100) for word in str(sent).lower().split()] for sent in corpus]
         embedded_sents = [self.avarage_vector(np.array(sent)) for sent in sents]
         return np.array(embedded_sents)
