@@ -2,10 +2,10 @@ from src.models.StableNaiveBayes import StableNaiveBayes
 import numpy as np
 import math
 
-class GaussianNaiveBayes(StableNaiveBayes):
+class GaussianNaiveBayes():
 
     def __init__(self):
-        pass
+        self.y = 0
 
     def p_y_01(self, y):
         # Compute Prior Probabilities
@@ -34,19 +34,19 @@ class GaussianNaiveBayes(StableNaiveBayes):
         #Input: New test sample
         #Output: y prediction {0, 1}
 
-        data_x_1 = np.column_stack(new_sample, self.x_1_mean, self.x_1_var).transpose()
-        likelihood_1 = np.apply_along_axis(compute_likelihood, data_x_1) #compute likelihood that P(xi = sample[i] | y=1) 
+        data_x_1 = np.array((new_sample, self.x_1_mean, self.x_1_var))
+        likelihood_1 = np.apply_along_axis(self.compute_likelihood, 0, data_x_1) #compute likelihood that P(xi = sample[i] | y=1) 
         log_l_1 = [np.log(like) for like in likelihood_1]   #compute log likelihoods
         p_y_1 = np.sum(log_l_1) + np.log(self.prior_1) #sum up log likelihoods and add prior
 
-        data_x_0 = np.column_stack(new_sample, self.x_0_mean, self.x_0_var).transpose()
-        likelihood_1 = np.apply_along_axis(compute_likelihood, data_x_0) #compute likelihood that P(xi = sample[i] | y=0)
+        data_x_0 = np.array((new_sample, self.x_0_mean, self.x_0_var))
+        likelihood_0 = np.apply_along_axis(self.compute_likelihood,0, data_x_0) #compute likelihood that P(xi = sample[i] | y=0)
         log_l_0 = [np.log(like) for like in likelihood_0] #compute log likelihoods
         p_y_0 = np.sum(log_l_0) + np.log(self.prior_0) #sum up log likelihoods and add prior
 
         if p_y_1 >= p_y_0:
             return 1
-        else
+        else:
             return 0
 
     def compute_likelihood(self, data):
