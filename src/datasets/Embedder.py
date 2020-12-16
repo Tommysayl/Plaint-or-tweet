@@ -8,6 +8,7 @@ class Embedder():
 
     def __init__(self):
         self.model = None
+        self.size = None
 
     def train_ft (self, corpus, size = 100, window = 5, min_count = 1, workers = 1, sg = 1, load_path = None):
         '''
@@ -19,6 +20,7 @@ class Embedder():
         sg = 0 for CBOW, 1 for skip-gram
         Output: Gensim Model
         '''
+        self.size = size
         if load_path is None:
             word_corpus = [sentence.lower().split() for sentence in corpus if isinstance(sentence, str)]
             self.model = FastText(sentences = word_corpus, size = size, window = window, min_count = min_count, workers = workers, sg = sg)
@@ -36,6 +38,7 @@ class Embedder():
         sg = 0 for CBOW, 1 for skip-gram
         Output: Gensim Model
         '''
+        self.size = size
         word_corpus = [sentence.lower().split() for sentence in corpus if isinstance(sentence, str)]
         self.model = Word2Vec(sentences = word_corpus, size = size, window = window, min_count = min_count, workers = workers, sg = sg)
         return self.model  
@@ -52,6 +55,6 @@ class Embedder():
         Input: corpus is a list of sentences
         Output: numpy array, i-th row is embedding of sentence i
         '''
-        sents = [[self.model.wv[word] if word in model.wv else np.zeros(100) for word in str(sent).lower().split()] for sent in corpus]
+        sents = [[self.model.wv[word] if word in self.model.wv else np.zeros(self.size) for word in str(sent).lower().split()] for sent in corpus]
         embedded_sents = [self.avarage_vector(np.array(sent)) for sent in sents]
         return np.array(embedded_sents)
