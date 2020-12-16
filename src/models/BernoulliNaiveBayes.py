@@ -47,27 +47,15 @@ class BernoulliNaiveBayes(StableNaiveBayes):
         p1 = (self.count_y_1 + 1) / (self.m + 2) #+1/+2 are due to Laplace smoothing
         return p1 if y == 1 else (1 - p1)
     
-    def multi_predict_class(self, X):
-        ''' X must be a sparse csr matrix (each row is a test sample), this will output a numpy array with the predicted classes for each sample '''
-
-        lpx0_y0 = np.array([ self.log_p_xi_given_y(0, i, 0) for i in range(X.shape[1]) ]) #P(x_i=0|y=0) for each i
-        lpx0_y1 = np.array([ self.log_p_xi_given_y(0, i, 1) for i in range(X.shape[1]) ]) #P(x_i=0|y=1) for each i
-        lpx1_y0 = np.array([ self.log_p_xi_given_y(1, i, 0) for i in range(X.shape[1]) ]) #P(x_i=1|y=0) for each i
-        lpx1_y1 = np.array([ self.log_p_xi_given_y(1, i, 1) for i in range(X.shape[1]) ]) #P(x_i=1|y=1) for each i
-
-        lp0 = lpx0_y0.sum() + log(self.p_y(0)) #P(X=00..0|y=0)P(y=0)
-        lp1 = lpx0_y1.sum() + log(self.p_y(1)) #P(X=00..0|y=1)P(y=0)
-        log_prob_0 = np.full(shape=X.shape[0], fill_value=lp0) #we start assuming all test data is made by zeroes
-        log_prob_1 = np.full(shape=X.shape[0], fill_value=lp1)
+    def multi_log_prob_y_given_x(self, X, y):
+        '''X must be a sparse csr matrix (each row is a test sample), otherwise it's unfeasable. this will output a numpy array with the log prob of y for each sample'''
+        lpx0_y = np.array([ self.log_p_xi_given_y(0, i, y) for i in range(X.shape[1]) ]) #log P(x_i=0|y) for each i
+        lpx1_y = np.array([ self.log_p_xi_given_y(1, i, y) for i in range(X.shape[1]) ]) #log P(x_i=1|y) for each i
+        lp0 = lpx0_y.sum() + log(self.p_y(y)) #log P(X=00..0|y)P(y)
+        log_prob = np.full(shape=X.shape[0], fill_value=lp0) #we start assuming all test data is made by zeroes
 
         #now we need to correct the log probabilities: for each non zero entry (r, c) in X
         #we need to subtract log(P(Xr_c=0|y)) and add log(P(Xr_c=1|y)) (because we assumed this entry to be 0, but now we need to correct this assumption)
+        correction = X.dot(lpx1_y - lpx0_y) #performs: Xri * (P(x_i=1|y) - P(x_i=0|y)) for each row(/test) r, and column(/feature) i (and sums elements on rows)
         
-        correction0 = X.dot(lpx1_y0 - lpx0_y0) #performs: Xri * (P(x_i=1|y=0) - P(x_i=0|y=0)) for each row(/test) r, and column(/feature) i (and sums elements on rows)
-        correction1 = X.dot(lpx1_y1 - lpx0_y1) #similar, for y=1
-        
-        log_prob_0 = log_prob_0 + correction0 #we get P(X|y=0)P(y=0)
-        log_prob_1 = log_prob_1 + correction1
-
-        y_pred = (log_prob_0 < log_prob_1).astype('int') #if log_prob_0 < log_prob_1 => class 1; if log_prob_0 >= log_prob_1 => class 0
-        return y_pred
+        return log_prob + correction #we get P(X|y)P(y)

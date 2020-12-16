@@ -23,11 +23,6 @@ class StableNaiveBayes(ABC):
     def p_y(self, y):
         ''' compute probability of y '''
         pass
-    
-    @abstractmethod
-    def multi_predict_class(self, X):
-        ''' predict classes (as a numpy array) for a matrix test data X (each row of the matrix is a test sample) [it might be a sparse matrix, or a numpy array if is small enough]'''
-        pass
 
     def log_p_xi_given_y(self, xi, i, y):
         ''' just log of p_xi_given_y (some implementations might want to override it, for example
@@ -44,3 +39,22 @@ class StableNaiveBayes(ABC):
         p0 = self.log_prob_y_given_x(X, 0)
         p1 = self.log_prob_y_given_x(X, 1)
         return 0 if p0 > p1 else 1
+
+    def multi_log_prob_y_given_x(self, X, y):
+        ''' computes log P(y|Xi) for each row i in X. X can be a numpy array or a sparse matrix, the output must be a numpy array'''
+        return np.array([self.log_prob_y_given_x(x, y) for x in X]) #slow in general, better provide other implementations
+
+    def multi_predict_class(self, X):
+        ''' predict classes (as a numpy array) for a matrix test data X (each row of the matrix is a test sample) [it might be a sparse matrix, or a numpy array if is small enough]'''
+        return (self.multi_log_prob_y_given_x(X, 0) < self.multi_log_prob_y_given_x(X, 1)).astype('int')
+        
+    def multi_predict_class_from_score(self, scores, threshold=0.5):
+        ''' given the scores computed with multi_prediction_score it predicts the labels (threshold=0.5 coincides with multi_predict_class)'''
+        return (scores >= threshold).astype('int')
+
+    def multi_prediction_score(self, X):
+        ''' returns numpy array with score of class being 1 for each row of X (can be used for roc-curve) '''
+        p0 = self.multi_log_prob_y_given_x(X, 0)
+        p1 = self.multi_log_prob_y_given_x(X, 1)
+        #p0 and p1 are always negative, doing p1/(p0+p1) gives higher score to the less probable class
+        return 1 - p1 / (p0 + p1)

@@ -36,22 +36,13 @@ class MultinomialNaiveBayes(BernoulliNaiveBayes):
     def log_p_xi_given_y(self, xi, i, y):
         return xi * super().log_p_xi_given_y(xi, i, y)
     
-    def multi_predict_class(self, X):
-        # note that this works: 
-        # even if we consider only the case for xi=0 (which will always give 0 in log-prob) and xi=1
-        # when we do the dot product with X, we multiply each result for xi=1 by Xri which will result in adding log_p_xi_given_y for the correct Xri
-        #return super().multi_predict_class(X)
+    def multi_log_prob_y_given_x(self, X, y):
+        '''X must be a sparse csr matrix (each row is a test sample), otherwise it's unfeasable. this will output a numpy array with the log prob of y for each sample'''
+        lpx1_y = np.array([ self.log_p_xi_given_y(1, i, y) for i in range(X.shape[1]) ]) #log P(x_i=1|y) for each i
+        log_prob = np.full(shape=X.shape[0], fill_value=log(self.p_y(y))) #we start assuming all test data is made by zeroes
 
-        #calling super is equivalent to this: (but slightly less perfoming)
-        lpx1_y0 = np.array([ self.log_p_xi_given_y(1, i, 0) for i in range(X.shape[1]) ]) #P(x_i=1|y=0) for each i
-        lpx1_y1 = np.array([ self.log_p_xi_given_y(1, i, 1) for i in range(X.shape[1]) ]) #P(x_i=1|y=1) for each i
+        #performs: Xri * log(P(x_i=1|y)) for each row r, and column i (and sums elements on rows)
+        #and note Xri * log(P(x_i=1|y)) = log(P(x_i=1|y)^Xri) = log(P(x_i=Xri|y))
+        correction = X.dot(lpx1_y) 
         
-        log_prob_0 = np.full(shape=X.shape[0], fill_value=log(self.p_y(0))) #we start assuming all test data is made by zeroes
-        log_prob_1 = np.full(shape=X.shape[0], fill_value=log(self.p_y(1)))
-
-        #performs: Xri * log(P(x_i=1|y=0)) for each row(/test) r, and column(/feature) i (and sums elements on rows)
-        #and note Xri * log(P(x_i=1|y=0)) = log(P(x_i=1|y=0)^Xri) = log(P(x_i=Xri|y=0))
-        log_prob_0 = log_prob_0 + X.dot(lpx1_y0) 
-        log_prob_1 = log_prob_1 + X.dot(lpx1_y1) #similar, for y=1
-
-        return (log_prob_0 < log_prob_1).astype('int')
+        return log_prob + correction #we get P(X|y)P(y)

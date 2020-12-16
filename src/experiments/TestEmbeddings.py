@@ -35,14 +35,14 @@ def load_preprocessing(path):
 if __name__ == '__main__':
     start_time = time.time()
 
-    OUTPUT_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
-    LOAD_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
+    OUTPUT_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
+    LOAD_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
 
     SEED = 42
     TRAIN_PERC = 0.8
     
     numFeaturesEmbedding = 100
-    numBinsPerFeature = [10] * numFeaturesEmbedding
+    numBinsPerFeature = [20] * numFeaturesEmbedding
 
     X, y = load_preprocessing('bow_preprocess.csv')
     y = y // 4 #labels in {0, 1}

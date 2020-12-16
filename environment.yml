@@ -15,6 +15,7 @@ dependencies:
   - spacy-model-en_core_web_sm
   - scipy
   - scikit-learn
+  - fire
   - gensim
   - pip
   - pip:
