@@ -1,9 +1,7 @@
 from src.datasets.DatasetReader import DatasetReader
 import os
 import pandas as pd
-import sys
-import spacy
-from src.datasets.DatasetReader import DatasetIstance
+import re
 
 
 class TwitterDSReader(DatasetReader):
@@ -19,3 +17,7 @@ class TwitterDSReader(DatasetReader):
         tweets = self.preprocess(df["text"], remove_links, correct_typos)
 
         self.build_from(tweets, df["label"], remove_stopwords)
+
+    def _extract_hashtags(self, tweet) -> str:
+        ''' Source: https://www.kaggle.com/mistryjimit26/twitter-sentiment-analysis-basic '''
+        return re.sub(r'#([^\s]+)', r'\1', tweet)
