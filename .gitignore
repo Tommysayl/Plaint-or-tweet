@@ -135,7 +135,6 @@ dmypy.json
 .vscode
 
 # Extracted datasets
-datasets/*
-!datasets/sentiment140.zip
-!datasets/imbd/
-!datasets/words_alpha.txt
+datasets/twitter.csv
+datasets/training.1600000.processed.noemoticon.csv
+datasets/imdb/imdb.csv
