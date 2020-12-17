@@ -4,6 +4,7 @@ import pandas as pd
 import fire
 from src.models.BagOfWordsNaiveBayes import BagOfWordsNaiveBayes
 from src.models.EmbeddingNaiveBayes import EmbeddingNaiveBayes
+from src.datasets.TwitterDSReader import TwitterDSReader
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.metrics import roc_curve, roc_auc_score, auc
@@ -18,7 +19,7 @@ def preprocessing(ds):
         for token in text.tokens: new = new + ' ' + token.lemma_
         corpus += [new]
         y += [text.label]
-    return corpus, y
+    return np.asarray(corpus), np.asarray(y)
 
 def save_preprocessing(path, corpus, y):
     df = pd.DataFrame(corpus)
@@ -35,7 +36,7 @@ def load_preprocessing(path):
 def main(name='', seed = 42, train_perc = 0.8, bow=True, 
 multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
-showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'bow_preprocess.csv'):
+showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = None):
     '''
     bow=True --> use bag of words, bow=False --> use embeddings
     - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
