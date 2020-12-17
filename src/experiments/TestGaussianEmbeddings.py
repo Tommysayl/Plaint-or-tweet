@@ -39,7 +39,7 @@ if __name__ == '__main__':
     LOAD_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
 
     SEED = 42
-    TRAIN_PERC = 0.80
+    TRAIN_PERC = 0.95
     
     numFeaturesEmbedding = 100
     numBinsPerFeature = [10] * numFeaturesEmbedding
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     
     X_test_vec = embedder.sentence_embedding(X_test)
     print("Test embeddings computed", (time.time() - start_time))
-    y_pred = [gnb.predict_class(test) for test in X_test_vec]
+    y_pred = gnb.multi_predict_class(X_test_vec)
 
     print('accuracy:', accuracy_score(y_test, y_pred))
     print('f1-score:', f1_score(y_test, y_pred))
