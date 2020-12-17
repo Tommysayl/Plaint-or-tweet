@@ -1,6 +1,6 @@
 import numpy as np
 from src.models.BernoulliNaiveBayes import BernoulliNaiveBayes
-from src.models.MultinomialNaiveBayesSparse import MultinomialNaiveBayes
+from src.models.MultinomialNaiveBayes import MultinomialNaiveBayes
 import math
 from src.datasets.TwitterDSReader import TwitterDSReader
 from scipy.sparse import csr_matrix
@@ -117,9 +117,22 @@ print(minMaxPair)
 X_train_vec = np.array([discretizeVector(v, minMaxPair[0][i], minMaxPair[1][i], 5) for i,v in enumerate(X_train_vec.T)]).T #discretize each column
 print(X_train_vec)
 '''
-
+'''
 v = np.array([[1, 2, 3, 4],
              [5, 6, 7, 8],
              [12, 11, 10, 9]])
 
 print(np.mean(v, axis=0))
+'''
+
+X = [[1, 0, 14, 1],
+    [0, 0, 15, 1],
+    [12, 0, 0, 0],
+    [0, 0, 1, 0],
+    [1, 14, 1, 1]]
+y = np.array([1, 1, 0, 1, 0])
+X = np.array(X)
+print(np.dot(X, np.array([1, 0, 1, 0])))
+print(np.apply_along_axis(lambda x: np.sum(x * y), 0, X))
+print(np.apply_along_axis(lambda x: np.sum(x * (1 - y)), 0, X))
+print(np.apply_along_axis(lambda x: x - np.array([1, 2, 3, 4]), 1, X))
