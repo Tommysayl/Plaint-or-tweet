@@ -37,7 +37,7 @@ class StableNaiveBayes(ABC):
     def log_prob_y_given_x(self, X, y):
         ''' computes (dropping the denominator) log(P(y|X)) = 
         (bayes + den. drop) => log(P(X|y) P(y)) = sum(log(P(Xi|y)) + log(P(y)). Note: X is a single test, as numpy array  '''
-        return sum([self.log_p_xi_given_y(X[i], i, y) for i in range(len(X))]) + log(self.p_y(y))
+        return sum([self.log_p_xi_given_y(X[i], i, y) for i in range(len(X))]) + np.log(self.p_y(y))
     
     def predict_class(self, X):
         ''' predict y for data X (single numpy array) '''

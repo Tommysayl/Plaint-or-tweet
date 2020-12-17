@@ -98,6 +98,3 @@ class CategoricalNaiveBayes(StableNaiveBayes):
         self.count_y_0 = 0
         self.th1 = []
         self.th2 = [[], []]
-
-    def multi_predict_class(self, X):
-        return np.array([self.predict_class(x) for x in X]) #slow!!!
