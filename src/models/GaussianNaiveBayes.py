@@ -7,11 +7,6 @@ class GaussianNaiveBayes():
     def __init__(self):
         self.y = 0
 
-    def p_y_01(self, y):
-        # Compute Prior Probabilities
-        self.prior_1 = y.count(1) / len(y)
-        self.prior_0 = y.count(0) / len(y)
-        return self.p_y_1, self.p_y_0
 
     def train(self, embeddings, y):
         # Input: Embeddings (Tweet level), y array
@@ -20,15 +15,19 @@ class GaussianNaiveBayes():
         # 2. Mean vector of all values in "negative" tweet's embeddings
         # 3. Variance vector of all values in "positive" tweet's embeddings
         # 4. Variance vector of all values in "negative" tweet's embeddings
+       
         self.y_1_indexes = [i[0] for i in enumerate(y) if y[i[0]] == 1]
-        self.x_1_samples = [vector for vector in embeddings if embeddings.index(vector) in self.y_1_indexes]
-        self.x_0_samples = [vector for vector in embeddings if embeddings.index(vector) not in self.y_1_indexes]
+        self.y_0_indexes = [i[0] for i in enumerate(y) if y[i[0]] == 0]
+        self.x_1_samples = [embeddings[ind] for ind in self.y_1_indexes]
+        self.x_0_samples = [embeddings[ind] for ind in self.y_0_indexes]
         self.x_1_mean = np.mean(self.x_1_samples, axis = 0)
         self.x_0_mean = np.mean(self.x_1_samples, axis = 0) 
         self.x_1_var = np.var(self.x_1_samples, axis = 0)
         self.x_0_var = np.var(self.x_0_samples, axis = 0)
+        self.prior_1 = len(self.y_1_indexes) / len(y)
+        self.prior_0 = len(self.y_0_indexes) / len(y)
         
-        return self.x_1_mean , self.x_0_mean, self.x_1_var, self.x_0_var
+        return np.array((self.x_1_mean , self.x_0_mean, self.x_1_var, self.x_0_var))
 
     def compute_log_L(self, new_sample):
         #Input: New test sample
