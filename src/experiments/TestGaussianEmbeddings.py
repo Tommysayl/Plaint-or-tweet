@@ -35,11 +35,11 @@ def load_preprocessing(path):
 if __name__ == '__main__':
     start_time = time.time()
 
-    OUTPUT_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
-    LOAD_EMBEDDER = None#'datasets/fasttext/train_embedding.ft'
+    OUTPUT_EMBEDDER = None#'datasets/fasttext/train_embedding.ft'
+    LOAD_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
 
     SEED = 42
-    TRAIN_PERC = 0.8
+    TRAIN_PERC = 0.80
     
     numFeaturesEmbedding = 100
     numBinsPerFeature = [10] * numFeaturesEmbedding
@@ -70,12 +70,12 @@ if __name__ == '__main__':
 
     gnb = GaussianNaiveBayes()
     X_train_vec = embedder.sentence_embedding(X_train)
-    X_train_params = gnb.train(X_train_vec, y_train)
-    print("Gaussian parameters computed")
-
+    gnb.train(X_train_vec, y_train)
+    print("Gaussian parameters computed", (time.time() - start_time))
+    
     X_test_vec = embedder.sentence_embedding(X_test)
-    print("Test embeddings computed")
-    y_pred = [gnb.compute_log_L(sample) for sample in X_test_vec]
+    print("Test embeddings computed", (time.time() - start_time))
+    y_pred = [gnb.predict_class(test) for test in X_test_vec]
 
     print('accuracy:', accuracy_score(y_test, y_pred))
     print('f1-score:', f1_score(y_test, y_pred))
