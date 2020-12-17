@@ -139,3 +139,4 @@ datasets/*
 !datasets/sentiment140.zip
 !datasets/imbd/
 !datasets/words_alpha.txt
+!datasets/twitter.zip
