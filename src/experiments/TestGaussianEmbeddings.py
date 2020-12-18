@@ -39,7 +39,7 @@ if __name__ == '__main__':
     LOAD_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
 
     SEED = 42
-    TRAIN_PERC = 0.95
+    TRAIN_PERC = 0.80
     
     numFeaturesEmbedding = 100
     numBinsPerFeature = [10] * numFeaturesEmbedding

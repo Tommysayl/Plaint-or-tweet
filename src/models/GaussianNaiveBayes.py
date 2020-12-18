@@ -53,11 +53,14 @@ class GaussianNaiveBayes(StableNaiveBayes):
     def compute_likelihood(self, data):
         return 1/((2*math.pi*data[1])**0.5)*np.exp(-(data[2] - data[0])**2/(2*data[1]))
 
+    def compute_log_likelihood(self, data):
+        return np.log(1/((2*math.pi*data[1])**0.5)*np.exp(-(data[2] - data[0])**2/(2*data[1])))
+
     def multi_log_prob_y_given_x(self, X):
 
  
-        likelihood1 = [np.log(np.apply_along_axis(self.compute_likelihood, 0, np.array((self.x_1_mean, self.x_1_var, test)))) for test in X]
-        likelihood0 = [np.log(np.apply_along_axis(self.compute_likelihood, 0, np.array((self.x_0_mean, self.x_0_var, test)))) for test in X]
+        likelihood1 = [np.apply_along_axis(self.compute_log_likelihood, 0, np.array((self.x_1_mean, self.x_1_var, test))) for test in X]
+        likelihood0 = [np.apply_along_axis(self.compute_log_likelihood, 0, np.array((self.x_0_mean, self.x_0_var, test))) for test in X]
         
         return likelihood1, likelihood0
 
@@ -68,7 +71,7 @@ class GaussianNaiveBayes(StableNaiveBayes):
         predictions = []
         
         for i in range(0, len(likelihood_1)):
-            if likelihood_1[i].sum() + self.p_y(1) < likelihood_0[i].sum() + self.p_y(0):
+            if likelihood_1[i].sum() + np.log(self.p_y(1)) < likelihood_0[i].sum() + np.log(self.p_y(0)):
                 predictions.append(0)
             else:
                 predictions.append(1)
