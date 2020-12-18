@@ -4,11 +4,12 @@ import numpy as np
 from src.utils import discretizeVector
 from src.models.CategoricalNaiveBayes import CategoricalNaiveBayes
 from src.models.MultinomialNaiveBayes import MultinomialNaiveBayes
+from src.models.GaussianNaiveBayes import GaussianNaiveBayes
 
 class EmbeddingNaiveBayes():
     def __init__(self, classifier='categorical', fastText=True, embeddingSize = 100, numBinsPerFeature = 10, loadEmbedderPath = None, exportEmbedderPath = None):
         '''fastText=False ==> word2vec'''
-        assert classifier in ['categorical', 'multinomial']  #classifier can be categorical, gaussian or multinomial
+        assert classifier in ['categorical', 'multinomial', 'gaussian']  #classifier can be categorical, gaussian or multinomial
         self.numBinsPerFeature = [numBinsPerFeature] * embeddingSize #assume same number of bins for each feature
         self.threshold = 0.5
         self.classifierType = classifier
@@ -57,6 +58,8 @@ class EmbeddingNaiveBayes():
             self.minPerFeature = np.apply_along_axis(lambda x: min(x), 0, X_train_vec) #find min for each column of X_train_vec
             X_train_vec = np.apply_along_axis(lambda x: x - self.minPerFeature, 1, X_train_vec) #make all values non-negative (gives problems with log)
             self.model = MultinomialNaiveBayes()
+        elif self.classifierType == 'gaussian':
+            self.model = GaussianNaiveBayes()
         else:
             assert False, 'classifier type not known'
 
@@ -77,6 +80,8 @@ class EmbeddingNaiveBayes():
         elif self.classifierType == 'multinomial':
             X_test_vec = np.apply_along_axis(lambda x: x - self.minPerFeature, 1, X_test_vec)
             X_test_vec[X_test_vec < 0] = 0
+        elif self.classifierType == 'gaussian':
+            pass
         else:
             assert False, 'classifier type not known'
         

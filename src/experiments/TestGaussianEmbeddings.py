@@ -35,8 +35,8 @@ def load_preprocessing(path):
 if __name__ == '__main__':
     start_time = time.time()
 
-    OUTPUT_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
-    LOAD_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
+    OUTPUT_EMBEDDER = None#'datasets/fasttext/train_embedding.ft'
+    LOAD_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
 
     SEED = 42
     TRAIN_PERC = 0.80
@@ -66,7 +66,9 @@ if __name__ == '__main__':
     
     X_test_vec = embedder.sentence_embedding(X_test)
     print("Test embeddings computed", (time.time() - start_time))
-    y_pred = gnb.multi_predict_class(X_test_vec)
+    y_score = gnb.multi_prediction_score(X_test_vec)
+    print((y_score >= 0).all())
+    y_pred = gnb.multi_predict_class_from_score(y_score, threshold=0.5)
 
     print('accuracy:', accuracy_score(y_test, y_pred))
     print('f1-score:', f1_score(y_test, y_pred))

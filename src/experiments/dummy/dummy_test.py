@@ -132,7 +132,10 @@ X = [[1, 0, 14, 1],
     [1, 14, 1, 1]]
 y = np.array([1, 1, 0, 1, 0])
 X = np.array(X)
+print(X.sum(axis=1))
+'''
 print(np.dot(X, np.array([1, 0, 1, 0])))
 print(np.apply_along_axis(lambda x: np.sum(x * y), 0, X))
 print(np.apply_along_axis(lambda x: np.sum(x * (1 - y)), 0, X))
 print(np.apply_along_axis(lambda x: x - np.array([1, 2, 3, 4]), 1, X))
+'''
