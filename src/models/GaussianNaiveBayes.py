@@ -4,30 +4,24 @@ import math
 
 class GaussianNaiveBayes(StableNaiveBayes):
 
-
     def __init__(self):
-        self.y = 0
+        self.count_y_1 = 0
+        self.m = 0
 
     def reset_params(self):
         pass
 
-
     def p_xi_given_y(self, xi, i, y):
         if y == 1:
             data = np.array((self.x_1_mean[i], self.x_1_var[i], xi))
-            
         else:
             data = np.array((self.x_0_mean[i], self.x_0_var[i], xi ))
         likelihood = np.apply_along_axis(self.compute_likelihood, 0, data) 
         return likelihood
 
-
     def p_y(self, y):
-
-        py1 = np.bincount(self.y)
-        return py1[1] / len(self.y) if y ==1 else py1[0] / len(self.y)
-
-
+        p1 = (self.count_y_1 + 1) / (self.m + 2) #+1/+2 are due to Laplace smoothing
+        return p1 if y == 1 else (1 - p1)
 
     def train(self, embeddings, y):
         # Input: Embeddings (Tweet level), y array
@@ -36,7 +30,8 @@ class GaussianNaiveBayes(StableNaiveBayes):
         # 2. Mean vector of all values in "negative" tweet's embeddings
         # 3. Variance vector of all values in "positive" tweet's embeddings
         # 4. Variance vector of all values in "negative" tweet's embeddings
-        self.y = y
+        self.m = len(y)
+        self.count_y_1 += np.count_nonzero(y) #nonzero == 1
         self.y_1_indexes = [i[0] for i in enumerate(y) if y[i[0]] == 1]
         self.y_0_indexes = [i[0] for i in enumerate(y) if y[i[0]] == 0]
         self.x_1_samples = [embeddings[ind] for ind in self.y_1_indexes]
@@ -50,34 +45,23 @@ class GaussianNaiveBayes(StableNaiveBayes):
         return None
 
 
-    def compute_likelihood(self, data):
-        return 1/((2*math.pi*data[1])**0.5)*np.exp(-(data[2] - data[0])**2/(2*data[1]))
+    def multi_log_prob_y_given_x(self, X, y):
+        #note that for a single sample Xi, we have:
+        #log P(Xij|y) = log(1/sqrt(2*pi*var)) - (Xij - mean)^2 / 2*var = -log(sqrt(2*pi*var)) - (Xij - mean)^2 / 2*var
+        log_prob = np.full(X.shape[0], np.log(self.p_y(y))) #start adding log P(y)
 
-    def compute_log_likelihood(self, data):
-        return np.log(1/((2*math.pi*data[1])**0.5)*np.exp(-(data[2] - data[0])**2/(2*data[1])))
+        mean = self.x_1_mean if y == 1 else self.x_0_mean #mean and variance to use, according to y
+        var = self.x_1_var if y == 1 else self.x_0_var
 
-    def multi_log_prob_y_given_x(self, X):
-
- 
-        likelihood1 = [np.apply_along_axis(self.compute_log_likelihood, 0, np.array((self.x_1_mean, self.x_1_var, test))) for test in X]
-        likelihood0 = [np.apply_along_axis(self.compute_log_likelihood, 0, np.array((self.x_0_mean, self.x_0_var, test))) for test in X]
+        log_prob -= np.log(np.sqrt(2 * np.pi * var)).sum() #this is always added, indipendently of X
         
-        return likelihood1, likelihood0
+        XminusMean = np.apply_along_axis(lambda x: (x-mean)*(x-mean) / (2 * var), 1, X) #apply on each row
 
-    def multi_predict_class(self, tests):
+        #all features are summed (by naive bayes assumption), ie: sum each row and then add the resulting column vector to log_prob of each sample
+        log_prob -= XminusMean.sum(axis=1) 
 
-        likelihood_1, likelihood_0 = self.multi_log_prob_y_given_x(tests)
-        
-        predictions = []
-        
-        for i in range(0, len(likelihood_1)):
-            if likelihood_1[i].sum() + np.log(self.p_y(1)) < likelihood_0[i].sum() + np.log(self.p_y(0)):
-                predictions.append(0)
-            else:
-                predictions.append(1)
-        
-
-        return predictions
-
+        return log_prob
 
     
+    def compute_likelihood(self, data):
+        return 1/((2*math.pi*data[1])**0.5)*np.exp(-(data[2] - data[0])**2/(2*data[1]))

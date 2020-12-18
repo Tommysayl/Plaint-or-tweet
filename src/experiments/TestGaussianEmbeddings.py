@@ -35,8 +35,8 @@ def load_preprocessing(path):
 if __name__ == '__main__':
     start_time = time.time()
 
-    OUTPUT_EMBEDDER = None#'datasets/fasttext/train_embedding.ft'
-    LOAD_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
+    OUTPUT_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
+    LOAD_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
 
     SEED = 42
     TRAIN_PERC = 0.80
@@ -47,15 +47,6 @@ if __name__ == '__main__':
     X, y = load_preprocessing('twitter_preprocess.csv')
     y = y // 4 #labels in {0, 1}
     print('preprocessing done', (time.time() - start_time))
-
-    X_tmp = []
-    y_tmp = []
-    for i in range(len(X)):
-        if len(str(X[i]).split()) > 0:
-            X_tmp.append(X[i])
-            y_tmp.append(y[i])
-    X = np.array(X_tmp)
-    y = np.array(y_tmp)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=TRAIN_PERC, random_state=SEED)
     print('train:', X_train.shape, (time.time() - start_time))
