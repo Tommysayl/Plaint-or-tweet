@@ -2,7 +2,7 @@ from src.datasets.Embedder import Embedder
 import time
 
 start_time = time.time()
-csv = "bow_preprocess.csv"
+csv = "twitter_preprocess.csv"
 vector_size = 100
 window_size = 5
 sg = 0
