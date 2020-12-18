@@ -7,7 +7,7 @@ class ImdbDSReader(DatasetReader):
 
     @property
     def default_path(self) -> str:
-        return "../../datasets/imbd/imdb.csv"
+        return "../../datasets/imdb/imdb.csv"
 
     def read_from_file(self, p=None, remove_stopwords=True, remove_links=True, correct_typos=True) -> None:
         super().read_from_file(p)

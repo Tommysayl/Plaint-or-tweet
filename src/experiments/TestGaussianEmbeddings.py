@@ -44,7 +44,7 @@ if __name__ == '__main__':
     numFeaturesEmbedding = 100
     numBinsPerFeature = [10] * numFeaturesEmbedding
 
-    X, y = load_preprocessing('bow_preprocess.csv')
+    X, y = load_preprocessing('twitter_preprocess.csv')
     y = y // 4 #labels in {0, 1}
     print('preprocessing done', (time.time() - start_time))
 

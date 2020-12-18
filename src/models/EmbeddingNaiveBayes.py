@@ -3,11 +3,12 @@ import logging
 import numpy as np
 from src.utils import discretizeVector
 from src.models.CategoricalNaiveBayes import CategoricalNaiveBayes
+from src.models.MultinomialNaiveBayes import MultinomialNaiveBayes
 
 class EmbeddingNaiveBayes():
     def __init__(self, classifier='categorical', fastText=True, embeddingSize = 100, numBinsPerFeature = 10, loadEmbedderPath = None, exportEmbedderPath = None):
         '''fastText=False ==> word2vec'''
-        assert classifier in ['categorical']  #classifier can be categorical, gaussian or multinomial
+        assert classifier in ['categorical', 'multinomial']  #classifier can be categorical, gaussian or multinomial
         self.numBinsPerFeature = [numBinsPerFeature] * embeddingSize #assume same number of bins for each feature
         self.threshold = 0.5
         self.classifierType = classifier
@@ -18,7 +19,8 @@ class EmbeddingNaiveBayes():
         self.export_embedder = exportEmbedderPath
         self.model = None
 
-        self.minMaxPair = None #minmax pair used for categorical classifier
+        self.minMaxPair = None #min/max pair used for categorical classifier
+        self.minPerFeature = None #minimum for each column (used in multinomial)
 
     def train(self, X_train, y_train, silent = False):
         '''train the model, X_train contains the tweet in each row'''
@@ -51,11 +53,16 @@ class EmbeddingNaiveBayes():
             if not silent:
                 print('train data discretized')
             self.model = CategoricalNaiveBayes(cat_nums=self.numBinsPerFeature)
-            self.model.train(X_train_vec, y_train)
-            if not silent:
-                print('model trained')
+        elif self.classifierType == 'multinomial':
+            self.minPerFeature = np.apply_along_axis(lambda x: min(x), 0, X_train_vec) #find min for each column of X_train_vec
+            X_train_vec = np.apply_along_axis(lambda x: x - self.minPerFeature, 1, X_train_vec) #make all values non-negative (gives problems with log)
+            self.model = MultinomialNaiveBayes()
         else:
             assert False, 'classifier type not known'
+
+        self.model.train(X_train_vec, y_train)
+        if not silent:
+            print('model trained')
 
     def perform_test(self, X_test, silent=False):
         X_test_vec = self.embedder.sentence_embedding(X_test)
@@ -67,9 +74,12 @@ class EmbeddingNaiveBayes():
             X_test_vec = np.array([discretizeVector(v, self.minMaxPair[0][i], self.minMaxPair[1][i], self.numBinsPerFeature[i]) for i,v in enumerate(X_test_vec.T)]).T #discretize each column
             if not silent:
                 print('test data discretized')
-            y_score = self.model.multi_prediction_score(X_test_vec)
-            y_pred = self.model.multi_predict_class_from_score(y_score, threshold=self.threshold)
-            return y_score, y_pred
+        elif self.classifierType == 'multinomial':
+            X_test_vec = np.apply_along_axis(lambda x: x - self.minPerFeature, 1, X_test_vec)
+            X_test_vec[X_test_vec < 0] = 0
         else:
             assert False, 'classifier type not known'
-
+        
+        y_score = self.model.multi_prediction_score(X_test_vec)
+        y_pred = self.model.multi_predict_class_from_score(y_score, threshold=self.threshold)
+        return y_score, y_pred

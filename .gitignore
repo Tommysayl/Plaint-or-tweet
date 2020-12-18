@@ -135,6 +135,8 @@ dmypy.json
 .vscode
 
 # Extracted datasets
+datasets/*
+datasets/fasttext/*
 datasets/twitter.csv
 datasets/training.1600000.processed.noemoticon.csv
 datasets/imdb/imdb.csv

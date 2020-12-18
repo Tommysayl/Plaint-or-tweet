@@ -20,7 +20,7 @@ def preprocessing(ds):
         for token in text.tokens: new = new + ' ' + token.lemma_
         corpus += [new]
         y += [text.label]
-    return np.asarray(corpus[1:]), np.asarray(y[1:])
+    return np.asarray(corpus[1:]), np.asarray(y[1:], dtype=np.int64)
 
 def save_preprocessing(path, corpus, y):
     df = pd.DataFrame(corpus)

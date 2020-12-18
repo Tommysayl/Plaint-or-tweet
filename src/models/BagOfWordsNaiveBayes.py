@@ -1,5 +1,5 @@
 from src.models.BernoulliNaiveBayes import BernoulliNaiveBayes
-from src.models.MultinomialNaiveBayesSparse import MultinomialNaiveBayes
+from src.models.MultinomialNaiveBayes import MultinomialNaiveBayes
 from sklearn.preprocessing import binarize
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer

@@ -17,7 +17,7 @@ class BernoulliNaiveBayes(StableNaiveBayes):
 
     def train(self, X, y):
         '''
-        X must be a sparse matrix (csr_matrix) and y must be a numpy array
+        X can be a sparse matrix (csr_matrix) or a numpy array and y must be a numpy array
         each row of X is a training data
         Note: you can also call this many times (separating the dataset into batches)
         '''
@@ -28,11 +28,15 @@ class BernoulliNaiveBayes(StableNaiveBayes):
         self.m += len(y)
         self.count_y_1 += np.count_nonzero(y) #nonzero == 1
 
-        y_col = np.transpose([y]) #y as a column vector
-        sm_rows = X.multiply(csr_matrix(y_col)).sum(axis=0) #multiply each column of X by y (ie: consider only class 1 samples), and then sum all the rows
-        self.count_x_1_y_1 += sm_rows.A1 #sm_rows is numpy matrix, A1 takes only the row
-        sm_rows = X.multiply(csr_matrix(1 - y_col)).sum(axis=0) #multiply each column of X by (1 - y) (ie: consider only class 0 samples), and then sum all the rows
-        self.count_x_1_y_0 += sm_rows.A1
+        if isinstance(X, np.ndarray): #X is numpy array
+            self.count_x_1_y_1 += np.apply_along_axis(lambda x: np.sum(x * y), 0, X)
+            self.count_x_1_y_0 += np.apply_along_axis(lambda x: np.sum(x * (1 - y)), 0, X)
+        else: #sparse matrix
+            y_col = np.transpose([y]) #y as a column vector
+            sm_rows = X.multiply(csr_matrix(y_col)).sum(axis=0) #multiply each column of X by y (ie: consider only class 1 samples), and then sum all the rows
+            self.count_x_1_y_1 += sm_rows.A1 #sm_rows is numpy matrix, A1 takes only the row
+            sm_rows = X.multiply(csr_matrix(1 - y_col)).sum(axis=0) #multiply each column of X by (1 - y) (ie: consider only class 0 samples), and then sum all the rows
+            self.count_x_1_y_0 += sm_rows.A1
 
     def p_xi_given_y(self, xi, i, y):
         p1 = 0
@@ -56,7 +60,10 @@ class BernoulliNaiveBayes(StableNaiveBayes):
 
         #now we need to correct the log probabilities: for each non zero entry (r, c) in X
         #we need to subtract log(P(Xr_c=0|y)) and add log(P(Xr_c=1|y)) (because we assumed this entry to be 0, but now we need to correct this assumption)
-        correction = X.dot(lpx1_y - lpx0_y) #performs: Xri * (P(x_i=1|y) - P(x_i=0|y)) for each row(/test) r, and column(/feature) i (and sums elements on rows)
+        if isinstance(X, np.ndarray):
+            correction = np.dot(X, lpx1_y - lpx0_y)
+        else:
+            correction = X.dot(lpx1_y - lpx0_y) #performs: Xri * (P(x_i=1|y) - P(x_i=0|y)) for each row(/test) r, and column(/feature) i (and sums elements on rows)
         
         return log_prob + correction #we get P(X|y)P(y)
 
