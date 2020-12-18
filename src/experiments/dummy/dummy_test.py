@@ -124,7 +124,7 @@ v = np.array([[1, 2, 3, 4],
 
 print(np.mean(v, axis=0))
 '''
-
+'''
 X = [[1, 0, 14, 1],
     [0, 0, 15, 1],
     [12, 0, 0, 0],
@@ -134,8 +134,23 @@ y = np.array([1, 1, 0, 1, 0])
 X = np.array(X)
 print(X.sum(axis=1))
 '''
+
+'''
 print(np.dot(X, np.array([1, 0, 1, 0])))
 print(np.apply_along_axis(lambda x: np.sum(x * y), 0, X))
 print(np.apply_along_axis(lambda x: np.sum(x * (1 - y)), 0, X))
 print(np.apply_along_axis(lambda x: x - np.array([1, 2, 3, 4]), 1, X))
 '''
+
+from sklearn.feature_extraction.text import CountVectorizer
+corpus = [
+    'This is the first document.',
+    'This document is the second document.',
+    'And this is the third one.',
+    'Is this the first document?',
+]
+#r"(?u)(?:\s+|$)(\w*)(?:\s+|$)"
+vectorizer = CountVectorizer(tokenizer=lambda x: x.split(), lowercase=False)
+vectorizer.fit(corpus)
+X = vectorizer.transform(corpus)
+print(vectorizer.get_feature_names())

@@ -10,23 +10,6 @@ from sklearn.metrics import accuracy_score, f1_score
 from sklearn.metrics import roc_curve, roc_auc_score, auc
 import matplotlib.pyplot as plt
 
-def preprocessing(ds):
-    ds.read_from_file()
-    corpus = []
-    y = []
-    for text in ds.docs():
-        new = ''
-        for token in text.tokens: new = new + ' ' + token.lemma_
-        corpus += [new]
-        y += [text.label]
-    return np.asarray(corpus), np.asarray(y)
-
-def save_preprocessing(path, corpus, y):
-    df = pd.DataFrame(corpus)
-    df.insert(0, 'Label', y, True)
-    #df = df.astype(np.uint8)
-    df.to_csv(path)
-
 def load_preprocessing(path):
     df = pd.read_csv(path)
     corpus = df.iloc[:,2].values
@@ -36,7 +19,7 @@ def load_preprocessing(path):
 def main(name='', seed = 42, train_perc = 0.8, bow=True, 
 multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
-showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'twitter_preprocess.csv'):
+showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'datasets/preprocess/twitter_preprocessed.csv'):
     '''
     bow=True --> use bag of words, bow=False --> use embeddings
     - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
@@ -56,14 +39,11 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', prep
         print('embeddingSize:', embeddingSize)
         print('numBinsPerFeature:', numBinsPerFeature)
 
-    if preprocessing_path is None:
-        print('start preprocessing')
-        X, y = preprocessing(TwitterDSReader())
-    else:
-        print('loading')
-        X, y = load_preprocessing('twitter_preprocess.csv')
+    X, y = load_preprocessing(preprocessing_path)
     y = y // 4 #labels in {0, 1}
-    print('preprocessing done')
+    print('preprocessing loaded')
+
+    print(X[:5])
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_perc, random_state=seed) #split in train/test
     print('train:', X_train.shape)

@@ -41,7 +41,6 @@ class GaussianNaiveBayes(StableNaiveBayes):
         self.x_1_var = np.var(self.x_1_samples, axis = 0)
         self.x_0_var = np.var(self.x_0_samples, axis = 0)
 
-
     def multi_log_prob_y_given_x(self, X, y):
         #note that for a single sample Xi, we have:
         #log P(Xij|y) = log(1/sqrt(2*pi*var)) - (Xij - mean)^2 / 2*var = -log(sqrt(2*pi*var)) - (Xij - mean)^2 / 2*var

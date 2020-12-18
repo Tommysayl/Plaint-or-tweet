@@ -28,17 +28,21 @@ def save_preprocessing(path, corpus, y):
     #df = df.astype(np.uint8)
     df.to_csv(path)
 
+'''
+def load_preprocessing(path):
+    df = pd.read_csv(path, encoding="ISO-8859-1", names=["text", "label"])
+    return df["text"].values, df["label"].values
+'''
 def load_preprocessing(path):
     df = pd.read_csv(path)
     corpus = df.iloc[:,2].values
     y = df['Label'].values
     return corpus, y
 
-
 def main(name='', seed = 42, train_perc = 0.8, bow=True, 
 multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
-showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = None):
+showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'imdb_preprocess.csv'):
     '''
     bow=True --> use bag of words, bow=False --> use embeddings
     - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
@@ -63,11 +67,13 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', prep
         X, y = preprocessing(ImdbDSReader())
     else:
         print('loading')
-        X, y = load_preprocessing('imdb_preprocess.csv')
+        X, y = load_preprocessing(preprocessing_path)
+    #X = X[1:]
+    #y = y[1:]
+    #y = y.astype(float)
     print('preprocessing done')
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_perc, random_state=seed) #split in train/test
-
     print('train:', X_train.shape)
     print('test:', X_test.shape)
     

@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
 from sklearn.metrics import roc_curve
 from src.utils import getBestThreshold
+import numpy as np
 
 class BagOfWordsNaiveBayes():
     def __init__(self, multinomial, useTfIdf, ngram_start, ngram_end):
@@ -18,9 +19,9 @@ class BagOfWordsNaiveBayes():
         self.threshold = 0.5
 
         if useTfIdf:
-            self.vectorizer = TfidfVectorizer(ngram_range=(ngram_start, ngram_end))
+            self.vectorizer = TfidfVectorizer(ngram_range=(ngram_start, ngram_end), tokenizer=lambda x: x.split(), lowercase=False, preprocessor=lambda x: x)
         else:
-            self.vectorizer = CountVectorizer(ngram_range=(ngram_start, ngram_end))
+            self.vectorizer = CountVectorizer(ngram_range=(ngram_start, ngram_end), tokenizer=lambda x: x.split(), lowercase=False, preprocessor=lambda x: x)
 
         if multinomial:
             self.model = MultinomialNaiveBayes()
@@ -31,6 +32,9 @@ class BagOfWordsNaiveBayes():
         '''train the model, X_train contains the tweet in each row'''
        
         self.vectorizer.fit(X_train.astype('str'))
+        assert len(self.vectorizer.stop_words_) == 0 #we don't want preprocess by scikit learn, we already performed it
+        #print(self.vectorizer.get_feature_names())
+        
         if not silent:
             print('vectorizer trained')
         
@@ -39,7 +43,7 @@ class BagOfWordsNaiveBayes():
             binarize(X_train_bow, copy=False)
         if not silent:
             print('train data vectorized')
-        
+
         self.model.train(X_train_bow, y_train)
         if not silent:
             print('model trained')
