@@ -38,7 +38,7 @@ def load_preprocessing(path):
 def main(name='', seed = 42, train_perc = 0.8, bow=True, 
 multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
-showTrainingStats=False, export_results_path='experiments/testSingleSplit', path_train = 'imdb_preprocess.csv', path_test = 'twitter_preprocess.csv'):
+showTrainingStats=False, export_results_path='experiments/testSingleSplit', path_imdb = 'imdb_preprocess.csv', path_tweet = 'twitter_preprocess.csv'):
     '''
     bow=True --> use bag of words, bow=False --> use embeddings
     - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
@@ -58,10 +58,32 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', path
         print('embeddingSize:', embeddingSize)
         print('numBinsPerFeature:', numBinsPerFeature)
 
-    X_train, y_train = load_preprocessing(path_train)
-    X_test, y_test = load_preprocessing(path_test)
-    y_test = y_test // 4   # since y_test is in {0,4}
+    X_imdb, y_imdb = load_preprocessing(path_imdb)
+    X_tweet, y_tweet = load_preprocessing(path_tweet)
+    y_tweet = y_tweet // 4   # since y_test is in {0,4}
 
+    X_imdb_train, X_imdb_test, y_imdb_train, y_imdb_test = train_test_split(X_imdb, y_imdb, train_size=train_perc, random_state=seed) #split imdb in train/test
+    X_tweet_train, X_tweet_test, y_tweet_train, y_tweet_test = train_test_split(X_tweet, y_tweet, train_size=train_perc, random_state=seed) #split twwet in train/test
+    
+    X_train = {'imdb': X_imdb_train, 'tweet': X_tweet_train}
+    X_test = {'imdb': X_imdb_test, 'tweet': X_tweet_test}
+    y_train = {'imdb': y_imdb_train, 'tweet': y_tweet_train}
+    y_test = {'imdb': y_imdb_test, 'tweet': y_tweet_test}
+
+    params = [bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
+    seed, classifierType, fastText, embeddingSize, numBinsPerFeature, emb_import_path, emb_export_path, showTrainingStats, 
+    start_time, export_results_path, name, train_perc]
+
+    # Train:Imdb, Test:Twitter 
+    ImdbTweet('Imdb vs Twitter', X_train['imdb'], X_test['tweet'], y_train['imdb'], y_test['tweet'], *params)
+
+    # Train:Imdb, Test:Twitter 
+    ImdbTweet('Twitter vs Imdb', X_train['tweet'], X_test['imdb'], y_train['tweet'], y_test['imdb'], *params)
+
+
+def ImdbTweet(title, X_train, X_test, y_train, y_test, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold,
+seed, classifierType, fastText, embeddingSize, numBinsPerFeature, emb_import_path, emb_export_path, showTrainingStats,
+start_time, export_results_path, name, train_perc):
     print('train:', X_train.shape)
     print('test:', X_test.shape)
     
@@ -101,6 +123,7 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', path
     if showTrainingStats:
         plt.plot(fpr_train, tpr_train, label='train roc')
     plt.legend()
+    plt.title(title)
     plt.show()
 
 def exportStats(path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findTh, fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc, fpr, tpr):
@@ -123,10 +146,10 @@ def exportStats(path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, 
         outd['ngram_e'] = ngram_e
         outd['findBestThreshold:'] = findTh
     else:
-        outd['fasttext'] = fastText
+        outd['fastText'] = fastText
         outd['classifierType'] = classifierType
         outd['embeddingSize'] = embeddingSize
-        outd['numBinsPeFeature'] = numBinsPerFeature
+        outd['numBinsPerFeature'] = numBinsPerFeature
     
     with open(path, 'w') as fout:
         fout.write(json.dumps(outd))
