@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.metrics import roc_curve, roc_auc_score, auc
 import matplotlib.pyplot as plt
+import json
 
 def load_preprocessing(path):
     df = pd.read_csv(path)
@@ -19,7 +20,8 @@ def load_preprocessing(path):
 def main(name='', seed = 42, train_perc = 0.8, bow=True, 
 multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
-showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'datasets/preprocess/twitter_preprocessed.csv'):
+showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'datasets/preprocess/twitter_preprocessed.csv',
+export_model=False, export_model_path="export/"):
     '''
     bow=True --> use bag of words, bow=False --> use embeddings
     - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
@@ -81,6 +83,9 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', prep
     exportStats(export_results_path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
     fastText, classifierType, embeddingSize, numBinsPerFeature, test_acc, test_f1, test_auroc, fpr, tpr)
 
+    if export_model:
+        export_ml_model(name, model, export_model_path)
+
     plt.plot(fpr, tpr, label='test roc')
     if showTrainingStats:
         plt.plot(fpr_train, tpr_train, label='train roc')
@@ -115,6 +120,16 @@ fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc,
     
     with open(path, 'w') as fout:
         fout.write(json.dumps(outd))
+
+# Exports the model to a file
+def export_ml_model(name, model, path):
+    path += name if name != "" else str(time.time())
+    path += ".potmodel"
+    print("Exporting model")
+    obj = model.to_dict()
+    with open(path, 'w') as fout:
+        fout.write(json.dumps(obj))
+    print("Model exported to " + path)
 
 if __name__ == '__main__':
     fire.Fire(main)

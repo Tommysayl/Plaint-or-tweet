@@ -9,11 +9,18 @@ each feature Xi has domain in {0,1}
 and each y is in {0,1}
 '''
 class BernoulliNaiveBayes(StableNaiveBayes):
-    def __init__(self):
-        self.m = 0
-        self.count_y_1 = 0 #numer of training examples where y=1
-        self.count_x_1_y_1 = None #i-th element is number of training examples where (Xi=1 and y=1) (will be numpy array)
-        self.count_x_1_y_0 = None #i-th element is number of training examples where (Xi=1 and y=0)
+    def __init__(self, from_dict = None):
+        if from_dict is None:
+            self.m = 0
+            self.count_y_1 = 0 #numer of training examples where y=1
+            self.count_x_1_y_1 = None #i-th element is number of training examples where (Xi=1 and y=1) (will be numpy array)
+            self.count_x_1_y_0 = None #i-th element is number of training examples where (Xi=1 and y=0)
+        else:
+            self.m = from_dict["parameters"]["m"]
+            self.count_y_1 = from_dict["parameters"]["count_y_1"]
+            self.count_x_1_y_1 = np.array(from_dict["parameters"]["count_x_1_y_1"])
+            self.count_x_1_y_0 = np.array(from_dict["parameters"]["count_x_1_y_0"])
+
 
     def train(self, X, y):
         '''
@@ -72,3 +79,15 @@ class BernoulliNaiveBayes(StableNaiveBayes):
         self.count_y_1 = 0 
         self.count_x_1_y_1 = None 
         self.count_x_1_y_0 = None 
+
+    # Serializes the model into a dictionary.
+    def to_dict(self):
+        return {
+            "classifier_type": "bernoulli",
+            "parameters": {
+                "m": self.m,
+                "count_y_1": self.count_y_1,
+                "count_x_1_y_1": self.count_x_1_y_1.tolist(),
+                "count_x_1_y_0": self.count_x_1_y_0.tolist()
+            }
+        }

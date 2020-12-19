@@ -78,3 +78,6 @@ class BagOfWordsNaiveBayes():
         self.threshold = sum(bestThresholds) / len(bestThresholds)
         print('best thresholds:', bestThresholds)
         print('threshold:', self.threshold)
+
+    def to_dict(self):
+        return self.model.to_dict()
