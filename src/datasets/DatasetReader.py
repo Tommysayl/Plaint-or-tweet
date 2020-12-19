@@ -81,9 +81,9 @@ class DatasetReader(Singleton, ABC):
         return (self._reduce_span_noise(span, url_extractor, remove_links, correct_typos) for span in text)
 
     def _reduce_span_noise(self, span, extractor, remove_links, correct_typos) -> str:
+        ''' Apply some grammar corrections to fix user typos or remove URLs from text. '''
         if isinstance(self, TwitterDSReader.TwitterDSReader):
             span = self._extract_hashtags(span)
-        ''' Apply some grammar corrections to fix user typos or remove URLs from text. '''
         if remove_links:
             span = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', '', span)
             #for url in extractor.find_urls(span):

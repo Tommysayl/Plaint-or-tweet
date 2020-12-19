@@ -5,7 +5,7 @@ import fire
 from src.models.BagOfWordsNaiveBayes import BagOfWordsNaiveBayes
 from src.models.EmbeddingNaiveBayes import EmbeddingNaiveBayes
 from src.datasets.TwitterDSReader import TwitterDSReader
-from src.datasets.ImdbDSReader import ImdbDSReader
+from src.datasets.IMDbDSReader import IMDbDSReader
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.metrics import roc_curve, roc_auc_score, auc
