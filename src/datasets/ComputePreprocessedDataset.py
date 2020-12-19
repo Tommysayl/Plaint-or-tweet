@@ -41,9 +41,9 @@ def main(dataset='twitter', preprocess=True, save_path = 'datasets/preprocess/tw
     if dataset == 'twitter':
         path = 'datasets/training.1600000.processed.noemoticon.csv'
     elif dataset == 'twitter60k':
-        path = 'datasets/twitter60k.csv'
+        path = 'datasets/twitter.csv'
     elif dataset == 'imdb':
-        path = 'datasets/imdb/Imdb.csv'
+        path = 'datasets/imdb.csv'
     
     dsr = None
     if preprocess: #otherwise not needed

@@ -15,7 +15,9 @@ Final project for the Fundamentals of Data Science course.
 
 # Extract the datasets
 To be able to test our models you need to extract at least one of the available datasets:
-- [Sentiment140](https://www.kaggle.com/kazanova/sentiment140): ```unzip sentiment140.zip ```
+- [Sentiment140](https://www.kaggle.com/kazanova/sentiment140): ```unzip -d datasets/ sentiment140.zip```
+- [Twitter60k](https://github.com/Sanjay-Suthraye/twitter_sentiment_analysis): ```unzip -d datasets/ datasets/twitter60k.zip```
+- [IMDb](https://www.kaggle.com/kazanova/sentiment140): ```unzip -d datasets/ datasets/imdb.zip```
 
 # Authors
 - [Tommaso Battistini](https://github.com/Frisayl)
