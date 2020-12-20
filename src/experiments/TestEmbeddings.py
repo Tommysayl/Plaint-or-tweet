@@ -35,8 +35,10 @@ def load_preprocessing(path):
 if __name__ == '__main__':
     start_time = time.time()
 
-    OUTPUT_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
-    LOAD_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
+    class1 = 4 # 1 for Imdb, 4 for Twitter
+    INPUT_PATH = 'twitter_preprocess.csv'
+    OUTPUT_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
+    LOAD_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
 
     SEED = 42
     TRAIN_PERC = 0.8
@@ -44,8 +46,9 @@ if __name__ == '__main__':
     numFeaturesEmbedding = 100
     numBinsPerFeature = [20] * numFeaturesEmbedding
 
-    X, y = load_preprocessing('twitter_preprocess.csv')
-    y = y // 4 #labels in {0, 1}
+    X, y = load_preprocessing(INPUT_PATH)
+    if class1 == 1: X = X[1:]
+    y = y[1:].astype(np.int64) // class1 if class1 == 1 else y // class1 // class1 #labels in {0, 1}
     print('preprocessing done', (time.time() - start_time))
 
     X_tmp = []
