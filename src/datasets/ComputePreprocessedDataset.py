@@ -30,8 +30,8 @@ def extractCorpusAndLabel(datasetName, path):
         df = pd.read_csv(path, encoding="ISO-8859-1", names=["label", "id", "date", "query", "username", "text"])
         return df["text"], df["label"]
     elif datasetName == 'imdb':
-         df = pd.read_csv(self.get_path(p), encoding="ISO-8859-1", names=["text", "label"])
-         return df["text"], df["label"]
+         df = pd.read_csv(path, encoding="ISO-8859-1", names=["text", "label"])
+         return df["text"][1:], df["label"][1:]
     
 def main(dataset='twitter', preprocess=True, save_path = 'datasets/preprocess/twitter_preprocessed.csv'):
     assert dataset in {'twitter', 'twitter60k', 'imdb'} #supported datasets
@@ -59,7 +59,7 @@ def main(dataset='twitter', preprocess=True, save_path = 'datasets/preprocess/tw
         corpus, labels = preprocessing(dsr, path)
     else:
         corpus, labels = extractCorpusAndLabel(dataset, path)
-    
+
     print('dataset preprocessed', (time.time() - start_time))
 
     save_preprocessing(save_path, corpus, labels)

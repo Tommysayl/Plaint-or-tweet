@@ -17,8 +17,8 @@ def load_preprocessing(path):
     y = df['Label'].values
     return corpus, y
 
-def main(name='', seed = 42, train_perc = 0.8, validation_perc=None, bow=True, 
-multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
+def main(name='', class1=4, seed = 42, train_perc = 0.8, validation_perc=None, bow=True, 
+multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
 showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'datasets/preprocess/twitter_preprocessed.csv',
 export_model=False, export_model_path="export/"):
@@ -26,7 +26,7 @@ export_model=False, export_model_path="export/"):
     if validation_perc is None, we don't do cross validation to find hyperparameters
 
     bow=True --> use bag of words, bow=False --> use embeddings
-    - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
+    - multinomial, tfidf, ngram_s, ngram_e ==> used only in Bag of Words
     - fastText, classifierType, numBinsPerFeature, embeddingSize ==> used only with embeddings
     '''
     start_time = time.time()
@@ -44,7 +44,7 @@ export_model=False, export_model_path="export/"):
         print('numBinsPerFeature:', numBinsPerFeature)
 
     X, y = load_preprocessing(preprocessing_path)
-    y = y // 4 #labels in {0, 1}
+    y = y // class1 #labels in {0, 1}
     print('preprocessing loaded')
 
     print(X[:5])
@@ -88,8 +88,12 @@ export_model=False, export_model_path="export/"):
 
     print('seconds needed:', (time.time() - start_time))
 
-    exportStats(export_results_path, name, seed, train_perc, validation_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
-    fastText, classifierType, embeddingSize, numBinsPerFeature, test_acc, test_f1, test_auroc, fpr, tpr, preprocessing_path)
+    bestngram = None
+    if bow:
+        bestngram = (model.ngram_s, model.ngram_e)
+
+    exportStats(export_results_path, name, seed, train_perc, validation_perc, bow, multinomial, tfidf, ngram_s, ngram_e, 
+    fastText, classifierType, embeddingSize, numBinsPerFeature, test_acc, test_f1, test_auroc, fpr, tpr, preprocessing_path, bestngram, model.threshold)
 
     if export_model:
         export_ml_model(name, model, export_model_path)
@@ -100,8 +104,8 @@ export_model=False, export_model_path="export/"):
     plt.legend()
     plt.show()
 
-def exportStats(path, name, seed, train_perc, val_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findTh, 
-fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc, fpr, tpr, preprocessing_path):
+def exportStats(path, name, seed, train_perc, val_perc, bow, multinomial, tfidf, ngram_s, ngram_e, 
+fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc, fpr, tpr, preprocessing_path, bestngram, bestthreshold):
     if path is None:
         return
     path += '_'+name+'_'+str(time.time())
@@ -114,6 +118,7 @@ fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc,
             'f1-score': f1,
             'auroc': auroc,
             'preprocessing_path': preprocessing_path,
+            'best_threshold': bestthreshold,
             'fpr': fpr.tolist(),
             'tpr': tpr.tolist()}
     if bow:
@@ -121,7 +126,8 @@ fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc,
         outd['tfidf'] = tfidf 
         outd['ngram_s'] = ngram_s
         outd['ngram_e'] = ngram_e
-        outd['findBestThreshold:'] = findTh
+        outd['bestngram_s'] = bestngram[0]
+        outd['bestngram_e'] = bestngram[1]
     else:
         outd['fasttext'] = fastText
         outd['classifierType'] = classifierType
