@@ -4,23 +4,10 @@ import pandas as pd
 import fire
 from src.models.BagOfWordsNaiveBayes import BagOfWordsNaiveBayes
 from src.models.EmbeddingNaiveBayes import EmbeddingNaiveBayes
-from src.datasets.TwitterDSReader import TwitterDSReader
-from src.datasets.IMDbDSReader import IMDbDSReader
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.metrics import roc_curve, roc_auc_score, auc
 import matplotlib.pyplot as plt
-
-def preprocessing(ds):
-    ds.read_from_file()
-    corpus = []
-    y = []
-    for text in ds.docs():
-        new = ''
-        for token in text.tokens: new = new + ' ' + token.lemma_
-        corpus += [new]
-        y += [text.label]
-    return np.asarray(corpus[1:]), np.asarray(y[1:], dtype=np.int64)
 
 def save_preprocessing(path, corpus, y):
     df = pd.DataFrame(corpus)
@@ -59,6 +46,9 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', path
         print('numBinsPerFeature:', numBinsPerFeature)
 
     X_imdb, y_imdb = load_preprocessing(path_imdb)
+    X_imdb = X_imdb[1:]
+    y_imdb = y_imdb[1:].astype(np.int64)
+
     X_tweet, y_tweet = load_preprocessing(path_tweet)
     y_tweet = y_tweet // 4   # since y_test is in {0,4}
 
@@ -72,18 +62,18 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', path
 
     params = [bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
     seed, classifierType, fastText, embeddingSize, numBinsPerFeature, emb_import_path, emb_export_path, showTrainingStats, 
-    start_time, export_results_path, name, train_perc]
+    start_time, export_results_path, train_perc]
 
     # Train:Imdb, Test:Twitter 
-    ImdbTweet('Imdb vs Twitter', X_train['imdb'], X_test['tweet'], y_train['imdb'], y_test['tweet'], *params)
+    ImdbTweet(X_train['imdb'], X_test['tweet'], y_train['imdb'], y_test['tweet'], 'ImdbTwitter' + name, *params)
 
-    # Train:Imdb, Test:Twitter 
-    ImdbTweet('Twitter vs Imdb', X_train['tweet'], X_test['imdb'], y_train['tweet'], y_test['imdb'], *params)
+    # Train:Imdb, Test:Twitter
+    ImdbTweet(X_train['tweet'], X_test['imdb'], y_train['tweet'], y_test['imdb'], 'TwitterImdb' + name, *params)
 
 
-def ImdbTweet(title, X_train, X_test, y_train, y_test, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold,
+def ImdbTweet(X_train, X_test, y_train, y_test, name, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold,
 seed, classifierType, fastText, embeddingSize, numBinsPerFeature, emb_import_path, emb_export_path, showTrainingStats,
-start_time, export_results_path, name, train_perc):
+start_time, export_results_path, train_perc):
     print('train:', X_train.shape)
     print('test:', X_test.shape)
     
@@ -123,7 +113,6 @@ start_time, export_results_path, name, train_perc):
     if showTrainingStats:
         plt.plot(fpr_train, tpr_train, label='train roc')
     plt.legend()
-    plt.title(title)
     plt.show()
 
 def exportStats(path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findTh, fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc, fpr, tpr):
