@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 '''
 plots roc curves reading all the data from a directory
 '''
-def main(root='experiments', filterNames={'IMDB_BernoulliBOW', 'IMDB_BernoulliBOW_NotPreprocessed'}):
+def main(root='experiments', filterNames={'ImdbTwitterBernoulliBOW(1,3)', 'TwitterImdbBernoulliBOW(1,3)'}):
     curves = []
     files = os.listdir(root)
     for f in files:
