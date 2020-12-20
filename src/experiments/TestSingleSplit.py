@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.metrics import roc_curve, roc_auc_score, auc
 import matplotlib.pyplot as plt
-import json
+import pickle
 
 def load_preprocessing(path):
     df = pd.read_csv(path)
@@ -127,8 +127,8 @@ def export_ml_model(name, model, path):
     path += ".potmodel"
     print("Exporting model")
     obj = model.to_dict()
-    with open(path, 'w') as fout:
-        fout.write(json.dumps(obj))
+    with open(path, 'wb') as fout:
+        fout.write(pickle.dumps(obj))
     print("Model exported to " + path)
 
 if __name__ == '__main__':

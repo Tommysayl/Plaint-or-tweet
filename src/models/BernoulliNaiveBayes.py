@@ -18,8 +18,8 @@ class BernoulliNaiveBayes(StableNaiveBayes):
         else:
             self.m = from_dict["parameters"]["m"]
             self.count_y_1 = from_dict["parameters"]["count_y_1"]
-            self.count_x_1_y_1 = np.array(from_dict["parameters"]["count_x_1_y_1"])
-            self.count_x_1_y_0 = np.array(from_dict["parameters"]["count_x_1_y_0"])
+            self.count_x_1_y_1 = from_dict["parameters"]["count_x_1_y_1"]
+            self.count_x_1_y_0 = from_dict["parameters"]["count_x_1_y_0"]
 
 
     def train(self, X, y):
@@ -87,7 +87,7 @@ class BernoulliNaiveBayes(StableNaiveBayes):
             "parameters": {
                 "m": self.m,
                 "count_y_1": self.count_y_1,
-                "count_x_1_y_1": self.count_x_1_y_1.tolist(),
-                "count_x_1_y_0": self.count_x_1_y_0.tolist()
+                "count_x_1_y_1": self.count_x_1_y_1,
+                "count_x_1_y_0": self.count_x_1_y_0
             }
         }
