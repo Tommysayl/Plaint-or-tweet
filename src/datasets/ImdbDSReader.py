@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import re
 
-class IMDbDSReader(DatasetReader):
+class ImdbDSReader(DatasetReader):
 
     @property
     def default_path(self) -> str:
