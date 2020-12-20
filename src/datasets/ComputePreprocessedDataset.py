@@ -6,7 +6,7 @@ import fire, time
 import numpy as np
 import pandas as pd
 from src.datasets.TwitterDSReader import TwitterDSReader
-from src.datasets.ImdbDSReader import IMDbDSReader
+from src.datasets.ImdbDSReader import ImdbDSReader
 
 def preprocessing(ds, path):
     ds.read_from_file(p=path)
