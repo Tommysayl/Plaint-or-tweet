@@ -17,12 +17,14 @@ def load_preprocessing(path):
     y = df['Label'].values
     return corpus, y
 
-def main(name='', seed = 42, train_perc = 0.8, bow=True, 
+def main(name='', seed = 42, train_perc = 0.8, validation_perc=None, bow=True, 
 multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
 showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'datasets/preprocess/twitter_preprocessed.csv',
 export_model=False, export_model_path="export/"):
     '''
+    if validation_perc is None, we don't do cross validation to find hyperparameters
+
     bow=True --> use bag of words, bow=False --> use embeddings
     - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
     - fastText, classifierType, numBinsPerFeature, embeddingSize ==> used only with embeddings
@@ -48,17 +50,23 @@ export_model=False, export_model_path="export/"):
     print(X[:5])
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_perc, random_state=seed) #split in train/test
+    X_val, y_val = None, None
+    if validation_perc is not None:
+        X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, train_size=validation_perc/(1-train_perc), random_state=seed+1)
     print('train:', X_train.shape)
     print('test:', X_test.shape)
+    if validation_perc is not None:
+        print('validation:', X_val.shape)
     
     #create the model
     model = None 
     if bow: #bag of words model
         model = BagOfWordsNaiveBayes(multinomial, tfidf, ngram_s, ngram_e) #create the model
-        if findBestThreshold: #if you want best threshold, perform kfold 
-            model.kFoldBestThresholdSearch(X_train, y_train, seed, splits=3) 
     else: #embeddings model
         model = EmbeddingNaiveBayes(classifierType, fastText, embeddingSize, numBinsPerFeature, loadEmbedderPath=emb_import_path, exportEmbedderPath=emb_export_path)
+
+    if validation_perc is not None:
+        model.cross_validation(X_train, y_train, X_val, y_val)
 
     model.train(X_train, y_train) #train the model
     y_score, y_pred = model.perform_test(X_test) #get scores and predictions
@@ -80,8 +88,8 @@ export_model=False, export_model_path="export/"):
 
     print('seconds needed:', (time.time() - start_time))
 
-    exportStats(export_results_path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
-    fastText, classifierType, embeddingSize, numBinsPerFeature, test_acc, test_f1, test_auroc, fpr, tpr)
+    exportStats(export_results_path, name, seed, train_perc, validation_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
+    fastText, classifierType, embeddingSize, numBinsPerFeature, test_acc, test_f1, test_auroc, fpr, tpr, preprocessing_path)
 
     if export_model:
         export_ml_model(name, model, export_model_path)
@@ -92,18 +100,20 @@ export_model=False, export_model_path="export/"):
     plt.legend()
     plt.show()
 
-def exportStats(path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findTh, 
-fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc, fpr, tpr):
+def exportStats(path, name, seed, train_perc, val_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findTh, 
+fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc, fpr, tpr, preprocessing_path):
     if path is None:
         return
     path += '_'+name+'_'+str(time.time())
     outd = {'name': name,
             'seed': seed, 
             'train_perc': train_perc,
+            'val_perc': val_perc,
             'bow': bow,
             'accuracy': accuracy,
             'f1-score': f1,
             'auroc': auroc,
+            'preprocessing_path': preprocessing_path,
             'fpr': fpr.tolist(),
             'tpr': tpr.tolist()}
     if bow:

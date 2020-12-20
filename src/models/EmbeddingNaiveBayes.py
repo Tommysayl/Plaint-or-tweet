@@ -88,3 +88,6 @@ class EmbeddingNaiveBayes():
         y_score = self.model.multi_prediction_score(X_test_vec)
         y_pred = self.model.multi_predict_class_from_score(y_score, threshold=self.threshold)
         return y_score, y_pred
+
+    def cross_validation(self, X_train, y_train, X_val, y_val):
+        pass

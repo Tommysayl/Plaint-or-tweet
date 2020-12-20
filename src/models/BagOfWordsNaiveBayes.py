@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
-from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_curve, accuracy_score
 from src.utils import getBestThreshold
 import numpy as np
 
@@ -15,24 +15,28 @@ class BagOfWordsNaiveBayes():
 
         assert multinomial or (not useTfIdf) #can't use tfidf without multinomial
 
+        self.useTfIdf = useTfIdf
+        self.ngram_s = ngram_start
+        self.ngram_e = ngram_end
         self.multinomial = multinomial
         self.threshold = 0.5
+        self.vectorizer = None
+        self.model = None
 
-        if useTfIdf:
-            self.vectorizer = TfidfVectorizer(ngram_range=(ngram_start, ngram_end), tokenizer=lambda x: x.split(), lowercase=False, preprocessor=lambda x: x)
+    def train(self, X_train, y_train, silent = False):
+        '''train the model, X_train contains the tweet in each row'''
+        if self.useTfIdf:
+            self.vectorizer = TfidfVectorizer(ngram_range=(self.ngram_s, self.ngram_e), tokenizer=lambda x: x.split(), lowercase=False, preprocessor=lambda x: x)
         else:
-            self.vectorizer = CountVectorizer(ngram_range=(ngram_start, ngram_end), tokenizer=lambda x: x.split(), lowercase=False, preprocessor=lambda x: x)
+            self.vectorizer = CountVectorizer(ngram_range=(self.ngram_s, self.ngram_e), tokenizer=lambda x: x.split(), lowercase=False, preprocessor=lambda x: x)
 
-        if multinomial:
+        if self.multinomial:
             self.model = MultinomialNaiveBayes()
         else:
             self.model = BernoulliNaiveBayes()
 
-    def train(self, X_train, y_train, silent = False):
-        '''train the model, X_train contains the tweet in each row'''
-       
         self.vectorizer.fit(X_train.astype('str'))
-        assert len(self.vectorizer.stop_words_) == 0 #we don't want preprocess by scikit learn, we already performed it
+        #assert len(self.vectorizer.stop_words_) == 0 #we don't want preprocess by scikit learn, we already performed it
         #print(self.vectorizer.get_feature_names())
         
         if not silent:
@@ -59,25 +63,42 @@ class BagOfWordsNaiveBayes():
         y_pred = self.model.multi_predict_class_from_score(y_score, threshold=self.threshold)
         return y_score, y_pred
 
-    def kFoldBestThresholdSearch(self, X_train, y_train, seed, splits = 3):
-        kf = KFold(n_splits = splits, random_state=seed, shuffle=True)
-        bestThresholds = []
-        i = 0
-        for train_idx, val_idx in kf.split(X_train):
-            print('begin iteration', i)
-            i+=1
-            X_train_small, X_val = X_train[train_idx], X_train[val_idx]
-            y_train_small, y_val = y_train[train_idx], y_train[val_idx]
-            self.model.reset_params()
-            self.train(X_train_small, y_train_small, silent=True)
-            y_score, y_pred = self.perform_test(X_val, silent=True)
-            fpr, tpr, thresholds = roc_curve(y_val, y_score)
-            bestThresholds += [getBestThreshold(tpr, fpr, thresholds)]
+    def cross_validation(self, X_train, y_train, X_val, y_val, silent = False):
+        ns = self.ngram_s
+        ne = self.ngram_e
+        #try all possibilities of ngrams in (start, end)
+        bestAcc = -1
+        bestNgram = (0, 0)
+        bestYscore = None
+        for i in range(ns, ne+1): 
+            for j in range(i, ne+1):
+                if not silent:
+                    print(f'trying ngram ({i},{j})')
+                self.ngram_s = i
+                self.ngram_e = j
+                self.train(X_train, y_train)
+                y_score, y_pred = self.perform_test(X_val)
+                acc = accuracy_score(y_val, y_pred)
+                if not silent:
+                    print('ngram accuracy:', acc)
+                if acc > bestAcc:
+                    bestAcc = acc
+                    bestNgram = (i, j)
+                    bestYscore = y_score
+        
+        if not silent:
+            print(f'best ngram:{bestNgram[0], bestNgram[1]}')
+        self.ngram_s = bestNgram[0]
+        self.ngram_e = bestNgram[1]
 
-        self.model.reset_params()
-        self.threshold = sum(bestThresholds) / len(bestThresholds)
-        print('best thresholds:', bestThresholds)
-        print('threshold:', self.threshold)
+        #find best threshold
+        if bestYscore is None:
+            self.train(X_train, y_train)
+            bestYscore, _ = self.perform_test(X_val)
+        fpr, tpr, thresholds = roc_curve(y_val, bestYscore)
+        self.threshold = getBestThreshold(tpr, fpr, thresholds)
+        if not silent:
+            print('best threshold:', self.threshold)
 
     def to_dict(self):
         return self.model.to_dict()
