@@ -6,7 +6,7 @@ import fire, time
 import numpy as np
 import pandas as pd
 from src.datasets.TwitterDSReader import TwitterDSReader
-from src.datasets.ImdbDSReader import ImdbDSReader
+from src.datasets.ImdbDSReader import IMDbDSReader
 
 def preprocessing(ds, path):
     ds.read_from_file(p=path)
@@ -30,7 +30,7 @@ def extractCorpusAndLabel(datasetName, path):
         df = pd.read_csv(path, encoding="ISO-8859-1", names=["label", "id", "date", "query", "username", "text"])
         return df["text"], df["label"]
     elif datasetName == 'imdb':
-         df = pd.read_csv(self.get_path(p), encoding="ISO-8859-1", names=["text", "label"])
+         df = pd.read_csv(path, encoding="ISO-8859-1", names=["text", "label"])
          return df["text"], df["label"]
     
 def main(dataset='twitter', preprocess=True, save_path = 'datasets/preprocess/twitter_preprocessed.csv'):
