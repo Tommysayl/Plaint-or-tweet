@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import re
 import numpy as np
+import random
 
 
 class RedditDSReader(DatasetReader):
@@ -23,6 +24,12 @@ class RedditDSReader(DatasetReader):
         comments = self.preprocess(df["text"][1:], remove_links, correct_typos)
 
         for i in range(1, len(df["sentiment"])):
-            df["sentiment"][i] = 4 if float(df["sentiment"][i]) < 0 else 0
+            if float(df["sentiment"][i]) < 0:
+                df["sentiment"][i] = 0
+            elif float(df["sentiment"][i]) > 0:
+                df["sentiment"][i] = 1
+            else:
+                df["sentiment"][i] = random.randint(0, 1)
+
 
         self.build_from(comments, df["sentiment"][1:], remove_stopwords)
