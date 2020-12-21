@@ -44,8 +44,7 @@ export_model=False, export_model_path="export/", show=True):
         print('numBinsPerFeature:', numBinsPerFeature)
 
     X, y = load_preprocessing(preprocessing_path)
-    if class1 == 1: X = X[1:]
-    y = y[1:].astype(np.int64) // class1 if class1 == 1 else y // class1 // class1 #labels in {0, 1}
+    y = y // class1 #labels in {0, 1}
     print('preprocessing loaded')
 
     print(X[:5])

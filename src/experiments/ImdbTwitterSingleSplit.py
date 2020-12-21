@@ -25,7 +25,7 @@ def load_preprocessing(path):
 def main(name='', seed = 42, train_perc = 0.8, bow=True, 
 multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
-showTrainingStats=False, export_results_path='experiments/testSingleSplit', path_imdb = 'imdb_preprocess.csv', path_tweet = 'twitter_preprocess.csv'):
+showTrainingStats=False, export_results_path='experiments/testSingleSplit', path_imdb = 'imdb_preprocess.csv', path_tweet = 'twitter_preprocess.csv', show=True):
     '''
     bow=True --> use bag of words, bow=False --> use embeddings
     - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
@@ -62,7 +62,7 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', path
 
     params = [bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
     seed, classifierType, fastText, embeddingSize, numBinsPerFeature, emb_import_path, emb_export_path, showTrainingStats, 
-    start_time, export_results_path, train_perc]
+    start_time, export_results_path, train_perc, show]
 
     # Train:Imdb, Test:Twitter 
     ImdbTweet(X_train['imdb'], X_test['tweet'], y_train['imdb'], y_test['tweet'], 'ImdbTwitter' + name, *params)
@@ -73,7 +73,7 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', path
 
 def ImdbTweet(X_train, X_test, y_train, y_test, name, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold,
 seed, classifierType, fastText, embeddingSize, numBinsPerFeature, emb_import_path, emb_export_path, showTrainingStats,
-start_time, export_results_path, train_perc):
+start_time, export_results_path, train_perc, show):
     print('train:', X_train.shape)
     print('test:', X_test.shape)
     
@@ -109,11 +109,12 @@ start_time, export_results_path, train_perc):
     exportStats(export_results_path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
     fastText, classifierType, embeddingSize, numBinsPerFeature, test_acc, test_f1, test_auroc, fpr, tpr)
 
-    plt.plot(fpr, tpr, label='test roc')
-    if showTrainingStats:
-        plt.plot(fpr_train, tpr_train, label='train roc')
-    plt.legend()
-    plt.show()
+    if show:
+        plt.plot(fpr, tpr, label='test roc')
+        if showTrainingStats:
+            plt.plot(fpr_train, tpr_train, label='train roc')
+        plt.legend()
+        plt.show()
 
 def exportStats(path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findTh, fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc, fpr, tpr):
     if path is None:
