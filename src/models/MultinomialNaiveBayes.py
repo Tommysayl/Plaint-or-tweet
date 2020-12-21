@@ -11,11 +11,11 @@ Note: Bernoulli performs the correct sums (in count_x_1_y_?) if we pass to it no
 """
 class MultinomialNaiveBayes(BernoulliNaiveBayes):
 
-    def __init__(self):
+    def __init__(self, alpha=1):
         super().__init__()
         self.count_y_1_words = 0 #number of words that appears in y=1 training cases 
         self.count_y_0_words = 0 #similar, for y=0
-
+        self.alpha = alpha
         self.d = 0
 
     def train(self, X, y):
@@ -38,8 +38,8 @@ class MultinomialNaiveBayes(BernoulliNaiveBayes):
         #note that the return value should be raised to xi
         #but we handle this in log_p_xi_given_y as this exponentiation is not numerically stable
         if y == 1:
-            return (self.count_x_1_y_1[i] + 1) / (self.count_y_1_words + self.d) #+1/+d for laplace smoothing
-        return (self.count_x_1_y_0[i] + 1) / (self.count_y_0_words + self.d)
+            return (self.count_x_1_y_1[i] + self.alpha) / (self.count_y_1_words + self.alpha * self.d) #+1/+d for laplace smoothing
+        return (self.count_x_1_y_0[i] + self.alpha) / (self.count_y_0_words + self.alpha * self.d)
     
     def log_p_xi_given_y(self, xi, i, y):
         return xi * super().log_p_xi_given_y(min(xi, 1), i, y)
