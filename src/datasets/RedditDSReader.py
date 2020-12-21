@@ -23,13 +23,21 @@ class RedditDSReader(DatasetReader):
 
         comments = self.preprocess(df["text"][1:], remove_links, correct_typos)
 
+        to_remove = []
         for i in range(1, len(df["sentiment"])):
             if float(df["sentiment"][i]) < 0:
                 df["sentiment"][i] = 0
             elif float(df["sentiment"][i]) > 0:
                 df["sentiment"][i] = 1
             else:
-                df["sentiment"][i] = random.randint(0, 1)
+                #df["sentiment"][i] = random.randint(0, 1)
+                to_remove.append(i)
+        
+        df.drop(to_remove)
+        #for index in reversed(to_remove):
+         #   print("here")
+          #  df.drop(index)
+
 
 
         self.build_from(comments, df["sentiment"][1:], remove_stopwords)
