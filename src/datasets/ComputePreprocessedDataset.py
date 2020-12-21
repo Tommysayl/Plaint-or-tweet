@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from src.datasets.TwitterDSReader import TwitterDSReader
 from src.datasets.ImdbDSReader import ImdbDSReader
+from src.datasets.RedditDSReader import RedditDSReader
 
 def preprocessing(ds, path):
     ds.read_from_file(p=path)
@@ -30,11 +31,18 @@ def extractCorpusAndLabel(datasetName, path):
         df = pd.read_csv(path, encoding="ISO-8859-1", names=["label", "id", "date", "query", "username", "text"])
         return df["text"], df["label"]
     elif datasetName == 'imdb':
-         df = pd.read_csv(path, encoding="ISO-8859-1", names=["text", "label"])
-         return df["text"][1:], df["label"][1:]
-    
+        df = pd.read_csv(path, encoding="ISO-8859-1", names=["text", "label"])
+        return df["text"][1:], df["label"][1:].astype(np.int64)
+    elif datasetName == 'reddit':
+        df = pd.read_csv(path, encoding="ISO-8859-1", names=["id", "timestamp", "team", "subreddit", "sentiment", "text"])
+        corpus = df["text"][1:]
+        label = df["sentiment"][1:].astype(np.float64)
+        mask = (label < -0.5) | (label > 0.5)  # Remove elements in [-0.5,0.5]
+        label = list(map(lambda x: 0 if x < 0 else 1, label[mask])) # discretize elements in 0,1
+        return corpus[mask], np.asarray(label, dtype=np.int64)
+        
 def main(dataset='twitter', preprocess=True, save_path = 'datasets/preprocess/twitter_preprocessed.csv'):
-    assert dataset in {'twitter', 'twitter60k', 'imdb'} #supported datasets
+    assert dataset in {'twitter', 'twitter60k', 'imdb', 'reddit'} #supported datasets
     start_time = time.time()
 
     path = ''
@@ -44,6 +52,8 @@ def main(dataset='twitter', preprocess=True, save_path = 'datasets/preprocess/tw
         path = 'datasets/twitter.csv'
     elif dataset == 'imdb':
         path = 'datasets/imdb.csv'
+    elif dataset == 'reddit':
+        path = 'datasets/reddit.csv'
     
     dsr = None
     if preprocess: #otherwise not needed
@@ -51,6 +61,8 @@ def main(dataset='twitter', preprocess=True, save_path = 'datasets/preprocess/tw
             dsr = TwitterDSReader()
         elif dataset == 'imdb':
             dsr = ImdbDSReader()
+        elif dataset == 'reddit':
+            dsr = RedditDSReader()
         
     print('ds reader created')
 
@@ -59,7 +71,7 @@ def main(dataset='twitter', preprocess=True, save_path = 'datasets/preprocess/tw
         corpus, labels = preprocessing(dsr, path)
     else:
         corpus, labels = extractCorpusAndLabel(dataset, path)
-
+    
     print('dataset preprocessed', (time.time() - start_time))
 
     save_preprocessing(save_path, corpus, labels)
