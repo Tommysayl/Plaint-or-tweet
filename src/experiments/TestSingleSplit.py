@@ -19,15 +19,9 @@ def load_preprocessing(path):
 
 def main(name='', class1=4, seed = 42, train_perc = 0.8, validation_perc=None, bow=True, 
 multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, 
-<<<<<<< HEAD
-fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
-showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'datasets/preprocess/twitter_no_preprocessing.csv',
-export_model=False, export_model_path="export/"):
-=======
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/twitter_embedding.ft', 
 showTrainingStats=False, export_results_path='experiments/testSingleSplit', preprocessing_path = 'datasets/preprocess/twitter_preprocessed.csv',
 export_model=False, export_model_path="export/", show=True):
->>>>>>> 52c0a3205c01ef6e1749eb744f788229897873e9
     '''
     if validation_perc is None, we don't do cross validation to find hyperparameters
 

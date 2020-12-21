@@ -17,6 +17,7 @@ dependencies:
   - scikit-learn
   - fire
   - gensim
+  - wordcloud
   - pip
   - pip:
     - urlextract
