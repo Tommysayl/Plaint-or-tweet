@@ -36,8 +36,8 @@ if __name__ == '__main__':
     start_time = time.time()
 
     class1 = 4 # 1 for Imdb, 4 for Twitter
-    INPUT_PATH = 'twitter_preprocess.csv'
-    OUTPUT_EMBEDDER = 'datasets/fasttext/train_embedding.ft'
+    INPUT_PATH = 'datasets/preprocess/reddit_not_preprocessed.csv'
+    OUTPUT_EMBEDDER = 'datasets/fasttext/reddit_embedding.ft'
     LOAD_EMBEDDER = None #'datasets/fasttext/train_embedding.ft'
 
     SEED = 42
