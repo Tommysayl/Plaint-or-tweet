@@ -1,0 +1,30 @@
+\documentclass{article}
+
+\usepackage{cite, enumitem, graphicx, hyperref, lipsum, subcaption, verbatim, wrapfig}
+\usepackage[normalem]{ulem}
+\usepackage[most]{tcolorbox}
+\useunder{\uline}{\ul}{}
+
+% code blocks
+\definecolor{codecolor}{rgb}{0.95,0.95,0.92}
+\newcommand{\textcode}[1]{\colorbox{color}{\texttt{#1}}}
+
+\title{Plaint-or-Tweet}
+\author{Tommaso Battistini, Edoardo De Matteis, Leonardo Emili, \\
+Mirko Giacchini, Alessio Luciani}
+
+\begin{document}
+    \maketitle
+
+    \include{modules/introduction}
+    \include{modules/models}
+    \include{modules/preprocessing}
+    \include{modules/test}
+
+    % bibliography
+    \clearpage
+    \bibliography{main}{}
+    \bibliographystyle{plainurl}
+
+
+\end{document}

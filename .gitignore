@@ -141,3 +141,10 @@ datasets/twitter.csv
 !datasets/reddit.csv
 datasets/training.1600000.processed.noemoticon.csv
 datasets/imdb.csv
+
+# latex
+report/**
+!report/modules
+!*.bib
+!*.pdf
+!*.tex
