@@ -42,7 +42,7 @@ python -m src.experiments.TestSingleSplit --class1=1 --bow=False --ngram_e=3 --p
 echo
 
 # Imdb v Twitter - Twitter v Imdb
-python -m src.experiments.ImdbTwitterSingleSplit --ngram_e=3 --path_imdb='datasets/preprocess/imdb_not_preprocessed.csv' --path_tweet='datasets/preprocess/twitter_not_preprocessed.csv' --name='BernoulliBOW(1,3)105' --seed=105 --show=False
+python -m src.experiments.ImdbTwitterSingleSplit --ngram_e=3 --path_imdb='datasets/preprocess/imdb_not_preprocessed.csv' --path_tweet='datasets/preprocess/twitter_not_preprocessed.csv' --name='BernoulliBOW(1,3)' --seed=105 --show=False
 echo
 
 # Reddit
