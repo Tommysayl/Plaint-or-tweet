@@ -1,3 +1,7 @@
+'''
+IMDb and Twitter are just names, can be used for arbitrary datasets.
+'''
+
 import math, time, json
 import numpy as np
 import pandas as pd
@@ -25,7 +29,7 @@ def load_preprocessing(path):
 def main(name='', seed = 42, train_perc = 0.8, bow=True, 
 multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
-showTrainingStats=False, export_results_path='experiments/testSingleSplit', path_imdb = 'imdb_preprocess.csv', path_tweet = 'twitter_preprocess.csv', show=True):
+showTrainingStats=False, export_results_path='experiments/testSingleSplit', path_imdb = 'imdb_preprocess.csv', path_tweet = 'twitter_preprocess.csv', show=True, classDataset=0):
     '''
     bow=True --> use bag of words, bow=False --> use embeddings
     - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
@@ -64,11 +68,13 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', path
     seed, classifierType, fastText, embeddingSize, numBinsPerFeature, emb_import_path, emb_export_path, showTrainingStats, 
     start_time, export_results_path, train_perc, show]
 
+    dataset = [ ['ImdbTwitter', 'TwitterImdb'], ['RedditTwitter', 'TwitterReddit'] ]
+
     # Train:Imdb, Test:Twitter 
-    ImdbTweet(X_train['imdb'], X_test['tweet'], y_train['imdb'], y_test['tweet'], 'ImdbTwitter' + name, *params)
+    ImdbTweet(X_train['imdb'], X_test['tweet'], y_train['imdb'], y_test['tweet'], dataset[classDataset][0] + name, *params)
 
     # Train:Imdb, Test:Twitter
-    ImdbTweet(X_train['tweet'], X_test['imdb'], y_train['tweet'], y_test['imdb'], 'TwitterImdb' + name, *params)
+    ImdbTweet(X_train['tweet'], X_test['imdb'], y_train['tweet'], y_test['imdb'], dataset[classDataset][1] + name, *params)
 
 
 def ImdbTweet(X_train, X_test, y_train, y_test, name, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold,
