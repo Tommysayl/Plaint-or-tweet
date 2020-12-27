@@ -8,7 +8,7 @@ plots roc curves reading all the data from a directory
 # 'TwitterBernoulliBOW(1,3)13', 'TwitterMultinomialBOW(1,3)13', 'TwitterMultinomialTfidfBOW(1,3)13'
 # 'TwitterCategoricalFastText(1,3)13', 'TwitterGaussianFastText(1,3)13', 'TwitterMultinomialFastText(1,3)13'
 # 'TwitterImdbBernoulliBOW(1,3)13', 'ImdbTwitterBernoulliBOW(1,3)13'
-def main(root='experiments', filterNames={'TwitterRedditBernoulliBOW(1,3)', 'RedditTwitterBernoulliBOW(1,3)'}):
+def main(root='experiments', filterNames={'TwitterMultinomialTfidfBOW(1,3)', 'TwitterMultinomialFastText'}):
     curves = []
     files = os.listdir(root)
     for f in files:
