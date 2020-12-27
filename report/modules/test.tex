@@ -1,27 +1,44 @@
 \section*{Tests and metrics}
 
-\dots
+\subsection*{Classic Na\"ive Bayes vs Embeddings}
+
+In figure \ref{fig:classic_nb_vs_embeddings} are represented the ROC curves obtained with the models 
+using no preprocessing. The dataset split is here set to 80\% for the train set and 20\% for the test set.
+The simplest approaches eventually brought the best results. In fact, using word embeddings, the final
+accuracy was much lower than the one obtained with the classic Na\"ive Bayes with bag of words. 
+Both the simple Bernoulli and the multinomial Na\"ive Bayes that counts words occurrences 
+have reached the maximum accuracy with very similar results.
 
 \begin{figure}[h!t]
     \centering
-    \includegraphics[scale=0.25]{../experiments/plots/TwitterBOWTfidf}
-    \caption{ROC curve for the Na\"ive Bayes approach with tf-idf.}
-    \label{fig:ROCNB}        
+    \includegraphics[scale=0.30]{../experiments/plots/classic_nb_vs_embeddings}
+    \caption{ROC curves that compare the classic Na\"ive Bayes models with bag of words and
+    word embedding approaches.}
+    \label{fig:classic_nb_vs_embeddings}        
 \end{figure}
 
-\begin{figure}[h!t]
-    \centering
-    \includegraphics[scale=0.25]{../experiments/plots/TwitterFastText}
-    \caption{ROC curve for the FastText embedding.}
-    \label{fig:ROCFT}
-\end{figure}
+In table \ref{tab:classic_nb_vs_embeddings} are shown some metrics about the models resulted from 
+classic approaches. All of their performances are very similar with around 80\% of Accuracy and 
+F1-score and 88\% of AUROC. 
 
-\begin{figure}[h!t]
+\begin{table}[h!t]
     \centering
-    \includegraphics[scale=0.25]{../experiments/plots/BOWFastText}
-    \caption{Comparing best na\"ive Bayes and FastText models.}
-    \label{fig:BOWFT}
-\end{figure}
+    \caption{Results obtained with bag of words Bernoulli and Multinomial models.}
+    \label{tab:classic_nb_vs_embeddings}
+    \begin{tabular}{c|ccc}
+        \hline
+        Model & Accuracy & F1 & AUROC \\
+        \hline 
+        Bernoulli & 0.797 & 0.799 & 0.880 \\ 
+        Multinomial & 0.802 & 0.802 & 0.884 \\ 
+        Multinomial TF-IDF & 0.805 & 0.804 & 0.886 \\ 
+        \hline
+    \end{tabular}
+\end{table}
+
+Additionally, some hyperparameter tuning has been applied. The intention has been to find the best n-grams
+to maximize the final results.
+In order to do that, 20\% of the dataset has been dedicated to the cross validation set.
 
 \subsection*{Kaggle notebooks}
 
