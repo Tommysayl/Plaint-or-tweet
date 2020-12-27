@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\usepackage{cite, enumitem, graphicx, hyperref, lipsum, subcaption, verbatim, wrapfig, rotating}
+\usepackage{cite, enumitem, graphicx, hyperref, lipsum, subcaption, verbatim, wrapfig, rotating, newclude}
 \usepackage[normalem]{ulem}
 \usepackage[most]{tcolorbox}
 \useunder{\uline}{\ul}{}
@@ -16,15 +16,15 @@ Mirko Giacchini, Alessio Luciani}
 \begin{document}
     \maketitle
 
-    \include{modules/introduction}
-    \include{modules/models}
-    \include{modules/preprocessing}
-    \include{modules/test}
-    \include{modules/conclusions}
-    \include{modules/roles}
+    \include*{modules/introduction}
+    \include*{modules/models}
+    \include*{modules/preprocessing}
+    \include*{modules/test}
+    \include*{modules/conclusions}
+    \include*{modules/roles}
 
     % bibliography
-    \clearpage
+    %\clearpage
     \bibliography{main}{}
     \bibliographystyle{plainurl}
 
