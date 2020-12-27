@@ -58,8 +58,8 @@ However their performance fairly improved when no processing was applied.
     \end{tabular}
 \end{table}
 
-We also wanted to see if more complex models could capture the irregularities in word embeddings better than ours na\"ive Bayes. 
-We looked for Kaggle notebooks with best results on word embeddings and found ~\cite{startups:notebook2} who is based on a LSTM neural network.
+We also wanted to see if more complex models could capture the irregularities in word embeddings better than our na\"ive Bayes. 
+We looked for Kaggle notebooks with best results on word embeddings and found ~\cite{startups:notebook2} which is based on a LSTM neural network.
 We were truly surprised to see that its accuracy was lower than the one reached by our tf-idf model, scores are showed in table \ref{tab:versus_metrics_FT}. 
 Anyway when emptying the lists of stopwords to be removed from the dataset and running the notebook again its accuracy enjoys a significant boost. 
 These results make us support the intuition that some stopwords contain useful information that we want to keep in our dataset. We compared the models using the metric chosen by the authors of the notebooks (AUROC for the first notebook, accuracy for the second one).
