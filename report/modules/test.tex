@@ -9,13 +9,14 @@ We can see how simpler approaches eventually bring the best results, in fact usi
 \begin{figure}[h!t]
     \centering
     \includegraphics[scale=0.50]{../experiments/plots/classic_nb_vs_embeddings}
-    \caption{ROC curves that compare the classic Na\"ive Bayes models with bag of words and
+    \caption{ROC curves that compare the classic Na\"ive Bayes models and
     word embedding approaches.}
     \label{fig:classic_nb_vs_embeddings}        
 \end{figure}
 
-Classical na\"ive Bayes are the best performing models so, focusing on them, in table \ref{tab:classic_nb_vs_embeddings} we can see some metrics. 
-All of their performances are very similar with around 80\% of Accuracy and F1-score and 88\% of AUROC.
+Classical na\"ive Bayes are the best performing models so, focusing on them, some hyperparameter tuning has been applied. The intention has been to find the best n-grams to maximize the final results. In order to do that, 20\% of the dataset has been dedicated to the cross validation set (60\% to training, 20\% to test).
+In table \ref{tab:classic_nb_vs_embeddings} we can see some metrics. 
+All of their performances are very similar with around 80\% of Accuracy and F1-score and 88\% of AUROC. The best n-grams turned out to be (1-3)-grams (for Bernoulli and Multinomial with tf-idf) and (1-2)-grams for standard multinomial event model.
 
 \begin{table}[h!t]
     \centering
@@ -32,14 +33,10 @@ All of their performances are very similar with around 80\% of Accuracy and F1-s
     \end{tabular}
 \end{table}
 
-Additionally, some hyperparameter tuning has been applied.
-The intention has been to find the best n-grams to maximize the final results.
-In order to do that, 20\% of the dataset has been dedicated to the cross validation set.
-
 \subsection*{Kaggle notebooks}
 
 In this section we describe how we compared our models to a couple of top-rated notebooks on Kaggle.
-We also tried to run these notebooks without removing stopwords from their datasets hoping to gain some further insight on the role their role in the learning process. 
+We also tried to run these notebooks without removing stopwords from their datasets hoping to gain some further insight on their role in the learning process. 
 
 The model we chose to compare to these notebooks is our best performing one: multinomial na\"ive Bayes with tf-idf. 
 The first selected notebook is the best one that uses this same technique ~\cite{startups:notebook1}, we resized our dataset split to match their and have a comparison as equal as possible.
@@ -54,7 +51,7 @@ However their performance fairly improved when no processing was applied.
         \hline
         Model & AUROC \\
         \hline 
-        Notebook & 0. 839 \\ 
+        Notebook & 0.839 \\ 
         Us & 0.841 \\ 
         Notebook no preprocessing & 0.849 \\ 
         \hline
@@ -75,7 +72,7 @@ These results make us support the intuition that some stopwords contain useful i
         \hline
         Model & Accuracy\\
         \hline 
-        Notebook & 0. 0.779 \\ 
+        Notebook & 0.779 \\ 
         Us & 0.799 \\ 
         Notebook with stop-word & 0.816 \\ 
         \hline
@@ -110,7 +107,7 @@ On the other hand Sentiment140 covers a wider class of human language and is les
 
 \begin{table}[h!t]
     \centering
-    \caption{Comparing metrics for some train test combinations. Twitter-IMDb is surprisingly not bad (even though still lower than training and testing directly on IMDb)}
+    \caption{Comparing metrics for some train test combinations (using Bernoulli event model). Twitter-IMDb is surprisingly not bad (even though still lower than training and testing directly on IMDb)}
     \label{tab:versus_metrics}
     \begin{tabular}{c|ccc}
         \hline
@@ -119,7 +116,7 @@ On the other hand Sentiment140 covers a wider class of human language and is les
         Twitter-IMDb & 0.732 & 0.723 & 0.806 \\ 
         IMDb-IMDb & 0.891 & 0.887 & 0.963 \\ 
         IMDb-Twitter & 0.550 & 0.330 & 0.625 \\ 
-        Twitter-Twitter & 0.797 & 0.800 & 0.880 \\ 
+        Twitter-Twitter & 0.797 & 0.799 & 0.880 \\ 
         \hline
     \end{tabular}
 \end{table}
