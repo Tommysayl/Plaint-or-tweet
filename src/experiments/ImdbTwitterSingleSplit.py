@@ -13,12 +13,6 @@ from sklearn.metrics import accuracy_score, f1_score
 from sklearn.metrics import roc_curve, roc_auc_score, auc
 import matplotlib.pyplot as plt
 
-def save_preprocessing(path, corpus, y):
-    df = pd.DataFrame(corpus)
-    df.insert(0, 'Label', y, True)
-    #df = df.astype(np.uint8)
-    df.to_csv(path)
-
 def load_preprocessing(path):
     df = pd.read_csv(path)
     corpus = df.iloc[:,2].values
@@ -27,12 +21,12 @@ def load_preprocessing(path):
 
 
 def main(name='', seed = 42, train_perc = 0.8, bow=True, 
-multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, findBestThreshold=False, 
+multinomial=False, tfidf=False, ngram_s=1, ngram_e=1, 
 fastText=True, classifierType = 'categorical', numBinsPerFeature=10, embeddingSize = 100, emb_export_path = None, emb_import_path = 'datasets/fasttext/train_embedding.ft', 
-showTrainingStats=False, export_results_path='experiments/testSingleSplit', path_imdb = 'imdb_preprocess.csv', path_tweet = 'twitter_preprocess.csv', show=True, classDataset=0):
+showTrainingStats=False, export_results_path='experiments/testSingleSplit', path_imdb = 'imdb_preprocess.csv', path_tweet = 'twitter_preprocess.csv', show=True, imdbClass=1, twitterClass=4):
     '''
     bow=True --> use bag of words, bow=False --> use embeddings
-    - multinomial, tfidf, ngram_s, ngram_e, findBestThreshold ==> used only in Bag of Words
+    - multinomial, tfidf, ngram_s, ngram_e ==> used only in Bag of Words
     - fastText, classifierType, numBinsPerFeature, embeddingSize ==> used only with embeddings
     '''
     start_time = time.time()
@@ -50,34 +44,31 @@ showTrainingStats=False, export_results_path='experiments/testSingleSplit', path
         print('numBinsPerFeature:', numBinsPerFeature)
 
     X_imdb, y_imdb = load_preprocessing(path_imdb)
-    X_imdb = X_imdb[1:]
-    y_imdb = y_imdb[1:].astype(np.int64)
+    y_imdb = y_imdb // imdbClass
 
     X_tweet, y_tweet = load_preprocessing(path_tweet)
-    y_tweet = y_tweet // 4   # since y_test is in {0,4}
+    y_tweet = y_tweet // twitterClass  
 
     X_imdb_train, X_imdb_test, y_imdb_train, y_imdb_test = train_test_split(X_imdb, y_imdb, train_size=train_perc, random_state=seed) #split imdb in train/test
-    X_tweet_train, X_tweet_test, y_tweet_train, y_tweet_test = train_test_split(X_tweet, y_tweet, train_size=train_perc, random_state=seed) #split twwet in train/test
-    
+    X_tweet_train, X_tweet_test, y_tweet_train, y_tweet_test = train_test_split(X_tweet, y_tweet, train_size=train_perc, random_state=seed) #split tweet in train/test
+
     X_train = {'imdb': X_imdb_train, 'tweet': X_tweet_train}
     X_test = {'imdb': X_imdb_test, 'tweet': X_tweet_test}
     y_train = {'imdb': y_imdb_train, 'tweet': y_tweet_train}
     y_test = {'imdb': y_imdb_test, 'tweet': y_tweet_test}
 
-    params = [bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
+    params = [bow, multinomial, tfidf, ngram_s, ngram_e, 
     seed, classifierType, fastText, embeddingSize, numBinsPerFeature, emb_import_path, emb_export_path, showTrainingStats, 
     start_time, export_results_path, train_perc, show]
 
-    dataset = [ ['ImdbTwitter', 'TwitterImdb'], ['RedditTwitter', 'TwitterReddit'] ]
-
     # Train:Imdb, Test:Twitter 
-    ImdbTweet(X_train['imdb'], X_test['tweet'], y_train['imdb'], y_test['tweet'], dataset[classDataset][0] + name, *params)
+    ImdbTweet(X_train['imdb'], X_test['tweet'], y_train['imdb'], y_test['tweet'], 'TrainOn1°_' + name, *params)
 
-    # Train:Imdb, Test:Twitter
-    ImdbTweet(X_train['tweet'], X_test['imdb'], y_train['tweet'], y_test['imdb'], dataset[classDataset][1] + name, *params)
+    # Train:Twitter, Test:Imdb
+    ImdbTweet(X_train['tweet'], X_test['imdb'], y_train['tweet'], y_test['imdb'], 'TrainOn2°_' + name, *params)
 
 
-def ImdbTweet(X_train, X_test, y_train, y_test, name, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold,
+def ImdbTweet(X_train, X_test, y_train, y_test, name, bow, multinomial, tfidf, ngram_s, ngram_e,
 seed, classifierType, fastText, embeddingSize, numBinsPerFeature, emb_import_path, emb_export_path, showTrainingStats,
 start_time, export_results_path, train_perc, show):
     print('train:', X_train.shape)
@@ -87,8 +78,6 @@ start_time, export_results_path, train_perc, show):
     model = None 
     if bow: #bag of words model
         model = BagOfWordsNaiveBayes(multinomial, tfidf, ngram_s, ngram_e) #create the model
-        if findBestThreshold: #if you want best threshold, perform kfold 
-            model.kFoldBestThresholdSearch(X_train, y_train, seed, splits=3) 
     else: #embeddings model
         model = EmbeddingNaiveBayes(classifierType, fastText, embeddingSize, numBinsPerFeature, loadEmbedderPath=emb_import_path, exportEmbedderPath=emb_export_path)
 
@@ -112,7 +101,7 @@ start_time, export_results_path, train_perc, show):
 
     print('seconds needed:', (time.time() - start_time))
 
-    exportStats(export_results_path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findBestThreshold, 
+    exportStats(export_results_path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, 
     fastText, classifierType, embeddingSize, numBinsPerFeature, test_acc, test_f1, test_auroc, fpr, tpr)
 
     if show:
@@ -122,7 +111,7 @@ start_time, export_results_path, train_perc, show):
         plt.legend()
         plt.show()
 
-def exportStats(path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, findTh, fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc, fpr, tpr):
+def exportStats(path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, ngram_e, fastText, classifierType, embeddingSize, numBinsPerFeature, accuracy, f1, auroc, fpr, tpr):
     if path is None:
         return
     path += '_'+name+'_'+str(time.time())
@@ -140,7 +129,6 @@ def exportStats(path, name, seed, train_perc, bow, multinomial, tfidf, ngram_s, 
         outd['tfidf'] = tfidf 
         outd['ngram_s'] = ngram_s
         outd['ngram_e'] = ngram_e
-        outd['findBestThreshold:'] = findTh
     else:
         outd['fastText'] = fastText
         outd['classifierType'] = classifierType

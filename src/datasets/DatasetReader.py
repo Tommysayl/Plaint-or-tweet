@@ -44,11 +44,11 @@ class DatasetReader(Singleton, ABC):
         if remove_stopwords:
             self._ds = (DatasetIstance(self.clear_stopwords(doc), label) for doc, label in zip(docs, labels))
         else:
-            self._ds = (DatasetIstance([token for token in doc if not token.text.isspace()], label) for doc, label in zip(docs, labels))
+            self._ds = (DatasetIstance([token for token in doc], label) for doc, label in zip(docs, labels))
 
     def clear_stopwords(self, doc) -> List[str]:
         ''' Returns a list of non-stopword tokens. '''
-        return [token for token in doc if token.text not in self.nlp.Defaults.stop_words and not token.text.isspace()]
+        return [token for token in doc if token.text not in self.nlp.Defaults.stop_words]
 
     @property
     def nlp(self):
@@ -63,7 +63,7 @@ class DatasetReader(Singleton, ABC):
         ''' Returns an iterator of [DatasetIstance]s. '''
         if self._ds is None:
             self.read_from_file()
-        return (istance for istance in self._ds if len(istance.tokens))
+        return (istance for istance in self._ds)
 
     def get_path(self, path) -> str:
         ''' Returns the provided dataset [path] if it exists, otherwise will return the [default_path] of the required dataset.  '''
