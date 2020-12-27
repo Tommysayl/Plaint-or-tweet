@@ -31,7 +31,7 @@ There is a plethora of valid collections of stop-words available on the web (e.g
 
 At first, we expected this process to lead to good results since it simplifies the problem by removing a possibly long list of words whose presence can be neglected, but we had to change our mind about that.
 
-Here, we can see some interesting results when testing our intuition on data preprocessing either for the multivariate Bernoulli or the multinomial na\"ive Bayes with word embeddings. 
+Here in figure \ref{fig:PREPROCESSING_ROC} we can see some interesting results when testing our intuition on data preprocessing either for the multivariate Bernoulli or the multinomial na\"ive Bayes with word embeddings. 
 Nevertheless, if we observe these ROC curves we discover some unexpected results: both the models achieved the best results when trained on non-preprocessed data.
 %\clearpage
 
@@ -55,7 +55,7 @@ Using the spaCy stopwords the performance of our model decreased, instead using 
 \begin{table}[h!t]
     \centering
     \caption{Comparing the results of preprocessing on our Bernoulli model. We randomly splitted the dataset in 80\% training set, 20\% test set.}
-    \label{tab:versus_metrics}
+    \label{tab:stopwords}
     \begin{tabular}{c|c}
         \hline
         Preprocessing & Accuracy \\
