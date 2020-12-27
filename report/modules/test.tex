@@ -16,10 +16,17 @@
     \label{fig:ROCFT}
 \end{figure}
 
+\begin{figure}[h!t]
+    \centering
+    \includegraphics[scale=0.25]{../experiments/plots/BOWFastText}
+    \caption{Comparing best na\"ive Bayes and FastText models.}
+    \label{fig:BOWFT}
+\end{figure}
+
 \subsection*{Kaggle notebooks}
 
 \subsection*{Further tests}
-We trained our model with a dataset and tested it against a different one, to this aim were used am IMDb dataset of cinematographic reviews ~\cite{data:imdb} and a Reddit one about various NFL games ~\cite{data:reddit}, results for the Bag-Of-Words Na\"ive Bayes (1,3)-gram model can be seen in figures \ref{fig:TwitterImdb} and \ref{fig:TwitterReddit}.
+We trained our model with a dataset and tested it against a different one, to this aim were used am IMDb dataset of cinematographic reviews ~\cite{data:imdb} and a Reddit one about various NFL games ~\cite{data:reddit}, results for the Bag-Of-Words Na\"ive Bayes (1,3)-gram model without preprocessing can be seen in figures \ref{fig:TwitterImdb} and \ref{fig:TwitterReddit}.
 
 \begin{figure}[h!t]
     \centering
@@ -35,7 +42,8 @@ We trained our model with a dataset and tested it against a different one, to th
     \label{fig:TwitterReddit}
 \end{figure}
 
-This is something usually not done since different datasets will have different distributions hence we expect bad results, strangely enough training our model with the Twitter dataset and testing it with the IMDb one gives rather good metrics that can be seen in table \ref{tab:versus_metrics}, is exposed only the comparision betwen Twitter and IMDb since results are more interesting. 
+This is something usually not done since different datasets will have different distributions hence we expect bad results and this is what we found except one single case.
+Training our model with the Twitter dataset and testing it with the IMDb one strangely gives us rather good metrics, this can be seen in table \ref{tab:versus_metrics}, is exposed only the comparision betwen Twitter and IMDb since results are more interesting. 
 This could happen since Twitter's dataset has a very large number of examples, other datasets other than being smaller are also very specific: the Reddit one is only about a specific set of american football games and the IMDb one is about cinematographic reviews, reasonably in this case lexicon is also more specific. 
 Sentiment140 on the other hand covers a larger class of human language and is less prone to be biased.
 
