@@ -3,7 +3,7 @@
 \subsection*{Classic Na\"ive Bayes vs Embeddings}
 
 In figure \ref{fig:classic_nb_vs_embeddings} are shown the ROC curves obtained with the models without preprocessing, the dataset split is set to 80\% for the train set and 20\% for the test one.
-We can see how simpler approaches eventually bring the best results, in fact using word embeddings the final accuracy was much lower than the one obtained with the classic na\"ive Bayes with bag of words. From these tests it looks like na\"ive Bayes can't exploit the properties of word embeddings at their best. It is also interesting to note how using the Gaussian model with embeddings turned out to be the worst model, as the values in the embeddings are probably not gaussian.
+We can see how simpler approaches eventually bring the best results, in fact using word embeddings the final score was much lower than the one obtained with the classic na\"ive Bayes with bag of words. From these tests it looks like na\"ive Bayes can't exploit the properties of word embeddings at their best. It is also interesting to note how using the Gaussian model with embeddings turned out to be the worst model, as the values in the embeddings are probably not gaussian.
 %Both the simple Bernoulli and the multinomial Na\"ive Bayes that counts words occurrences have reached the maximum accuracy with very similar results.
 
 \begin{figure}[h!t]
@@ -39,7 +39,7 @@ In this section we describe how we compared our models to a couple of top-rated 
 We also tried to run these notebooks without removing stopwords from their datasets hoping to gain some further insight on their role in the learning process. 
 
 The model we chose to compare to these notebooks is our best performing one: multinomial na\"ive Bayes with tf-idf. 
-The first selected notebook is the best one that uses this same technique ~\cite{startups:notebook1}, we resized our dataset split to match their and have a comparison as equal as possible.
+The first selected notebook is the best one that uses this same technique ~\cite{startups:notebook1}, we resized our dataset split to match theirs and have a comparison as equal as possible.
 We were happy to see that their AUROC score was slightly lower than ours, as showed in \ref{tab:versus_metrics_NB}.
 However their performance fairly improved when no processing was applied.
 
@@ -60,9 +60,9 @@ However their performance fairly improved when no processing was applied.
 
 We also wanted to see if more complex models could capture the irregularities in word embeddings better than ours na\"ive Bayes. 
 We looked for Kaggle notebooks with best results on word embeddings and found ~\cite{startups:notebook2} who is based on a LSTM neural network.
-We were truly surprised to see that its accuracy was lower than the one reached by our tf-idf model, scores are showed ay table \ref{tab:versus_metrics_FT}. 
+We were truly surprised to see that its accuracy was lower than the one reached by our tf-idf model, scores are showed in table \ref{tab:versus_metrics_FT}. 
 Anyway when emptying the lists of stopwords to be removed from the dataset and running the notebook again its accuracy enjoys a significant boost. 
-These results make us support the intuition that some stopwords contain useful information that we want to keep in our dataset. 
+These results make us support the intuition that some stopwords contain useful information that we want to keep in our dataset. We compared the models using the metric chosen by the authors of the notebooks (AUROC for the first notebook, accuracy for the second one).
 
 \begin{table}[h!t]
     \centering
@@ -107,7 +107,7 @@ On the other hand Sentiment140 covers a wider class of human language and is les
 
 \begin{table}[h!t]
     \centering
-    \caption{Comparing metrics for some train test combinations (using Bernoulli event model). Twitter-IMDb is surprisingly not bad (even though still lower than training and testing directly on IMDb)}
+    \caption{Comparing metrics for some train test combinations (using Bernoulli event model). Twitter-IMDb is surprisingly not bad (even though still worse than training and testing directly on IMDb)}
     \label{tab:versus_metrics}
     \begin{tabular}{c|ccc}
         \hline
