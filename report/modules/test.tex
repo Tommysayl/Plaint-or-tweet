@@ -11,7 +11,7 @@ have reached the maximum accuracy with very similar results.
 
 \begin{figure}[h!t]
     \centering
-    \includegraphics[scale=0.30]{../experiments/plots/classic_nb_vs_embeddings}
+    \includegraphics[scale=0.50]{../experiments/plots/classic_nb_vs_embeddings}
     \caption{ROC curves that compare the classic Na\"ive Bayes models with bag of words and
     word embedding approaches.}
     \label{fig:classic_nb_vs_embeddings}        
@@ -81,30 +81,31 @@ We also wanted to see if more complex models could capture the irregularities in
 However,  by emptying the lists of stopwords to be removed from the dataset and running the notebook again,  its accuracy enjoyed a significant boost.  The difference between the two executions of notebook [12] is a substantial result to support the intuition that some stopwords contain useful information that we want to keep in our dataset. 
 
 \subsection*{Further tests}
-We trained our model with a dataset and tested it against a different one, to this aim were used am IMDb dataset of cinematographic reviews ~\cite{data:imdb} and a Reddit one about various NFL games ~\cite{data:reddit}, results for the Bag-Of-Words Na\"ive Bayes (1,3)-gram model without preprocessing can be seen in figures \ref{fig:TwitterImdb} and \ref{fig:TwitterReddit}.
+We performed some unusual tests: we trained our model with a dataset and tested it against a different one. The motivation behind this test is the following: suppose we have a model which is good in sentiment analysis on tweets, and we would like to do sentiment analisys also on another social network but for which we don't have any data to train on (if we had even a small amount of data, we could try some transfer learning technique), then it is interesting to see if our model trained on twitter can give decent results also on the other social network, or if the results will be basically random.\\
+We used an IMDb dataset of cinematographic reviews ~\cite{data:imdb} and a Reddit one about various NFL games\footnote{In this dataset the label is a real value in [-1,1], we considered only the comments with absolute value greater than 0.5, and set their label either to 0 or 1} ~\cite{data:reddit}, results for the Multivariate Bernoulli event model Na\"ive Bayes (using (1,3)-gram) without preprocessing can be seen in figures \ref{fig:TwitterImdb} and \ref{fig:TwitterReddit}.
 
 \begin{figure}[h!t]
     \centering
-    \includegraphics[scale=0.25]{../experiments/plots/ImdbTwitter}
-    \caption{Comparison between Imdb-Twitter and Twitter-Imdb.}
+    \includegraphics[scale=0.3]{../experiments/plots/ImdbTwitter}
+    \caption{Comparison between Imdb-Twitter (training on Imdb, testing on Twitter) and Twitter-Imdb (training on Twitter, testing on Imdb).}
     \label{fig:TwitterImdb}        
 \end{figure}
 
 \begin{figure}[h!t]
     \centering
-    \includegraphics[scale=0.25]{../experiments/plots/RedditTwitter}
-    \caption{Comparison betwen Reddit-Twitter and Twitter-Reddit.}
+    \includegraphics[scale=0.3]{../experiments/plots/RedditTwitter}
+    \caption{Comparison betwen Reddit-Twitter (training on Reddit, testing on Twitter), and Twitter-Reddit (training on Twitter, testing on Reddit).}
     \label{fig:TwitterReddit}
 \end{figure}
 
-This is something usually not done since different datasets will have different distributions hence we expect bad results and this is what we found except one single case.
-Training our model with the Twitter dataset and testing it with the IMDb one strangely gives us rather good metrics, this can be seen in table \ref{tab:versus_metrics}, is exposed only the comparision betwen Twitter and IMDb since results are more interesting. 
+This is something usually not done since different datasets will have different distributions hence we expect bad results and this is what we found except for one single case.
+Training our model with the Twitter dataset and testing it with the IMDb one strangely gives us rather good metrics, this can be seen in table \ref{tab:versus_metrics} where is exposed only the comparision betwen Twitter and IMDb since results are more interesting. 
 This could happen since Twitter's dataset has a very large number of examples, other datasets other than being smaller are also very specific: the Reddit one is only about a specific set of american football games and the IMDb one is about cinematographic reviews, reasonably in this case lexicon is also more specific. 
 Sentiment140 on the other hand covers a larger class of human language and is less prone to be biased.
 
 \begin{table}[h!t]
     \centering
-    \caption{Comparing metrics for some train test combinations.}
+    \caption{Comparing metrics for some train test combinations. Twitter-IMDb is surprisingly not bad (even though still lower than training and testing directly on IMDb)}
     \label{tab:versus_metrics}
     \begin{tabular}{c|ccc}
         \hline
