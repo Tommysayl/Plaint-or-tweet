@@ -2,12 +2,9 @@
 
 \subsection*{Classic Na\"ive Bayes vs Embeddings}
 
-In figure \ref{fig:classic_nb_vs_embeddings} are represented the ROC curves obtained with the models 
-using no preprocessing. The dataset split is here set to 80\% for the train set and 20\% for the test set.
-The simplest approaches eventually brought the best results. In fact, using word embeddings, the final
-accuracy was much lower than the one obtained with the classic Na\"ive Bayes with bag of words. 
-Both the simple Bernoulli and the multinomial Na\"ive Bayes that counts words occurrences 
-have reached the maximum accuracy with very similar results.
+In figure \ref{fig:classic_nb_vs_embeddings} are shown the ROC curves obtained with the models without preprocessing, the dataset split is set to 80\% for the train set and 20\% for the test one.
+We can see how simpler approaches eventually bring the best results, in fact using word embeddings the final accuracy was much lower than the one obtained with the classic na\"ive Bayes with bag of words. 
+%Both the simple Bernoulli and the multinomial Na\"ive Bayes that counts words occurrences have reached the maximum accuracy with very similar results.
 
 \begin{figure}[h!t]
     \centering
@@ -17,9 +14,8 @@ have reached the maximum accuracy with very similar results.
     \label{fig:classic_nb_vs_embeddings}        
 \end{figure}
 
-In table \ref{tab:classic_nb_vs_embeddings} are shown some metrics about the models resulted from 
-classic approaches. All of their performances are very similar with around 80\% of Accuracy and 
-F1-score and 88\% of AUROC. 
+Classical na\"ive Bayes are the best performing models so, focusing on them, in table \ref{tab:classic_nb_vs_embeddings} we can see some metrics. 
+All of their performances are very similar with around 80\% of Accuracy and F1-score and 88\% of AUROC.
 
 \begin{table}[h!t]
     \centering
@@ -36,53 +32,59 @@ F1-score and 88\% of AUROC.
     \end{tabular}
 \end{table}
 
-Additionally, some hyperparameter tuning has been applied. The intention has been to find the best n-grams
-to maximize the final results.
+Additionally, some hyperparameter tuning has been applied.
+The intention has been to find the best n-grams to maximize the final results.
 In order to do that, 20\% of the dataset has been dedicated to the cross validation set.
 
 \subsection*{Kaggle notebooks}
 
-In this section we describe how we compared our models to a couple of top-rated notebooks on Kaggle.  We also tried to run these notebooks without removing stopwords from their datasets, to gain some further insight on the role their role in the learning process. 
+In this section we describe how we compared our models to a couple of top-rated notebooks on Kaggle.
+We also tried to run these notebooks without removing stopwords from their datasets hoping to gain some further insight on the role their role in the learning process. 
 
-The model we chose to compare to these notebooks is our most performing one: Multinomial Naive Bayes with Tf-Idf.  The first selected notebook on Kaggle is the most performing one to use the same technique ~/cite{notebook1}.  After resizing our dataset split to theirs, in order to make the comparison as equal as possible,  we were happy to see that it's area under the ROC score was slightly lower than ours,  as showed in table 2.  However, by running the same notebook without executing the preprocessing parts, its performance fairly improved.
+The model we chose to compare to these notebooks is our best performing one: multinomial na\"ive Bayes with tf-idf. 
+The first selected notebook is the best one that uses this same technique ~\cite{startups:notebook1}, we resized our dataset split to match their and have a comparison as equal as possible.
+We were happy to see that their AUROC score was slightly lower than ours, as showed in \ref{tab:versus_metrics_NB}.
+However their performance fairly improved when no processing was applied.
 
 \begin{table}[h!t]
     \centering
-    \caption{Comparing our model to notebook ~/cite{notebook1},  with and without preprocessing}
-    \label{tab:versus_metrics}
+    \caption{Model comparision with and without preprocessing.}
+    \label{tab:versus_metrics_NB}
     \begin{tabular}{c|c}
         \hline
         Model & AUROC \\
         \hline 
-        notebook & 0. 839 \\ 
-        our model & 0.841 \\ 
-        notebook without preprocessing & 0.849 \\ 
+        Notebook & 0. 839 \\ 
+        Us & 0.841 \\ 
+        Notebook no preprocessing & 0.849 \\ 
         \hline
     \end{tabular}
 \end{table}
 
-We also wanted to see if more complex models could capture the irregularities in word embeddings better than our Naive Bayes.  We searched Kaggle for the notebook with best results on word embeddings and found this one ~/cite{notebook2},  based on a LSTM neural network.  We were truly surprised to see that its accuracy was lower than the one reached by our Tf-Idf,  as showed in table 3. 
+We also wanted to see if more complex models could capture the irregularities in word embeddings better than ours na\"ive Bayes. 
+We looked for Kaggle notebooks with best results on word embeddings and found ~\cite{startups:notebook2} who is based on a LSTM neural network.
+We were truly surprised to see that its accuracy was lower than the one reached by our tf-idf model, scores are showed ay table \ref{tab:versus_metrics_FT}. 
+Anyway when emptying the lists of stopwords to be removed from the dataset and running the notebook again its accuracy enjoys a significant boost. 
+These results make us support the intuition that some stopwords contain useful information that we want to keep in our dataset. 
 
 \begin{table}[h!t]
     \centering
-    \caption{Comparing our model to notebook ~/cite{notebook2},  with and without stopword removal}
-    \label{tab:versus_metrics}
+    \caption{Model comparision with and without stopword removal.}
+    \label{tab:versus_metrics_FT}
     \begin{tabular}{c|c}
         \hline
         Model & Accuracy\\
         \hline 
-        notebook & 0. 0.779 \\ 
-        our model & 0.799 \\ 
-        notebook without removing stopwords & 0.816 \\ 
+        Notebook & 0. 0.779 \\ 
+        Us & 0.799 \\ 
+        Notebook with stop-word & 0.816 \\ 
         \hline
     \end{tabular}
 \end{table}
 
-However,  by emptying the lists of stopwords to be removed from the dataset and running the notebook again,  its accuracy enjoyed a significant boost.  The difference between the two executions of notebook [12] is a substantial result to support the intuition that some stopwords contain useful information that we want to keep in our dataset. 
-
 \subsection*{Further tests}
 We performed some unusual tests: we trained our model with a dataset and tested it against a different one. The motivation behind this test is the following: suppose we have a model which is good in sentiment analysis on tweets, and we would like to do sentiment analisys also on another social network but for which we don't have any data to train on (if we had even a small amount of data, we could try some transfer learning technique), then it is interesting to see if our model trained on twitter can give decent results also on the other social network, or if the results will be basically random.\\
-We used an IMDb dataset of cinematographic reviews ~\cite{data:imdb} and a Reddit one about various NFL games\footnote{In this dataset the label is a real value in [-1,1], we considered only the comments with absolute value greater than 0.5, and set their label either to 0 or 1} ~\cite{data:reddit}, results for the Multivariate Bernoulli event model Na\"ive Bayes (using (1,3)-gram) without preprocessing can be seen in figures \ref{fig:TwitterImdb} and \ref{fig:TwitterReddit}.
+We used an IMDb dataset of cinematographic reviews ~\cite{data:imdb} and a Reddit one about various NFL games\footnote{In this dataset the label is a real value in [-1,1], we considered only the comments with absolute value greater than 0.5, and set their label either to 0 or 1} ~\cite{data:reddit}, results for the Multivariate Bernoulli event model Na\"ive Bayes (using (1,3)-gram\footnote{In a (1-3)-gram we consider 1,2 and 3-grams}) without preprocessing can be seen in figures \ref{fig:TwitterImdb} and \ref{fig:TwitterReddit}.
 
 \begin{figure}[h!t]
     \centering
@@ -98,10 +100,13 @@ We used an IMDb dataset of cinematographic reviews ~\cite{data:imdb} and a Reddi
     \label{fig:TwitterReddit}
 \end{figure}
 
-This is something usually not done since different datasets will have different distributions hence we expect bad results and this is what we found except for one single case.
-Training our model with the Twitter dataset and testing it with the IMDb one strangely gives us rather good metrics, this can be seen in table \ref{tab:versus_metrics} where is exposed only the comparision betwen Twitter and IMDb since results are more interesting. 
-This could happen since Twitter's dataset has a very large number of examples, other datasets other than being smaller are also very specific: the Reddit one is only about a specific set of american football games and the IMDb one is about cinematographic reviews, reasonably in this case lexicon is also more specific. 
-Sentiment140 on the other hand covers a larger class of human language and is less prone to be biased.
+This is something usually not done since different datasets will have different distributions hence we expect bad results and this is what we got except for one particular case.
+Training our model with the Twitter dataset and testing it with the IMDb one strangely gives us rather good metrics, this can be seen in table \ref{tab:versus_metrics} where only the comparision betwen Twitter and IMDb is shown since results are more interesting. 
+
+This could be due to Twitter's dataset being very large while other datasets are smaller and also very specific.
+The Reddit one is only about a specific set of american football games and the IMDb one is about cinematographic reviews, reasonably in this case lexicon is also more specific than arbitrairly picked tweets.
+On the other hand Sentiment140 covers a wider class of human language and is less prone to be biased.
+
 
 \begin{table}[h!t]
     \centering
