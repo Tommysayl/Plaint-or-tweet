@@ -1,6 +1,6 @@
 \section*{Tests and metrics}
 
-...
+\dots
 
 \begin{figure}[h!t]
     \centering
@@ -24,6 +24,44 @@
 \end{figure}
 
 \subsection*{Kaggle notebooks}
+
+In this section we describe how we compared our models to a couple of top-rated notebooks on Kaggle.  We also tried to run these notebooks without removing stopwords from their datasets, to gain some further insight on the role their role in the learning process. 
+
+The model we chose to compare to these notebooks is our most performing one: Multinomial Naive Bayes with Tf-Idf.  The first selected notebook on Kaggle is the most performing one to use the same technique [11].  After resizing our dataset split to theirs, in order to make the comparison as equal as possible,  we were happy to see that it's area under the ROC score was slightly lower than ours,  as showed in table 2.  However, by running the same notebook without executing the preprocessing parts, its performance fairly improved.
+
+\begin{table}[h!t]
+    \centering
+    \caption{Comparing our model to notebook [11],  with and without preprocessing}
+    \label{tab:versus_metrics}
+    \begin{tabular}{c|c}
+        \hline
+        Model & AUROC \\
+        \hline 
+        notebook & 0. 839 \\ 
+        our model & 0.841 \\ 
+        notebook without preprocessing & 0.849 \\ 
+        \hline
+    \end{tabular}
+\end{table}
+
+We also wanted to see if more complex models could capture the irregularities in word embeddings better than our Naive Bayes.  We searched Kaggle for the notebook with best results on word embeddings and found this one [12],  based on a LSTM neural network.  We were truly surprised to see that its accuracy was lower than the one reached by our Tf-Idf,  as showed in table 3. 
+
+\begin{table}[h!t]
+    \centering
+    \caption{Comparing our model to notebook [12],  with and without stopword removal}
+    \label{tab:versus_metrics}
+    \begin{tabular}{c|c}
+        \hline
+        Model & Accuracy\\
+        \hline 
+        notebook & 0. 0.779 \\ 
+        our model & 0.799 \\ 
+        notebook without removing stopwords & 0.816 \\ 
+        \hline
+    \end{tabular}
+\end{table}
+
+However,  by emptying the lists of stopwords to be removed from the dataset and running the notebook again,  its accuracy enjoyed a significant boost.  The difference between the two executions of notebook [12] is a substantial result to support the intuition that some stopwords contain useful information that we want to keep in our dataset. 
 
 \subsection*{Further tests}
 We trained our model with a dataset and tested it against a different one, to this aim were used am IMDb dataset of cinematographic reviews ~\cite{data:imdb} and a Reddit one about various NFL games ~\cite{data:reddit}, results for the Bag-Of-Words Na\"ive Bayes (1,3)-gram model without preprocessing can be seen in figures \ref{fig:TwitterImdb} and \ref{fig:TwitterReddit}.
