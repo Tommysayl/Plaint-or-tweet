@@ -3,7 +3,7 @@
 \subsection*{Classic Na\"ive Bayes vs Embeddings}
 
 In figure \ref{fig:classic_nb_vs_embeddings} are shown the ROC curves obtained with the models without preprocessing, the dataset split is set to 80\% for the train set and 20\% for the test one.
-We can see how simpler approaches eventually bring the best results, in fact using word embeddings the final accuracy was much lower than the one obtained with the classic na\"ive Bayes with bag of words. 
+We can see how simpler approaches eventually bring the best results, in fact using word embeddings the final accuracy was much lower than the one obtained with the classic na\"ive Bayes with bag of words. From these tests it looks like na\"ive Bayes can't exploit the properties of word embeddings at their best. It is also interesting to note how using the Gaussian model with embeddings turned out to be the worst model, as the values in the embeddings are probably not gaussian.
 %Both the simple Bernoulli and the multinomial Na\"ive Bayes that counts words occurrences have reached the maximum accuracy with very similar results.
 
 \begin{figure}[h!t]
