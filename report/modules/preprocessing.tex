@@ -15,14 +15,14 @@ We noticed that users tend to make mistakes when posting new tweets either becau
 
 We decided to apply lemmatization and tokenization, which are common operations in NLP tasks, on our dataset, and in order to do that we relied on the spaCy pipeline ~\cite{startups:spaCy} because of its efficiency and because nowadays many companies that deal with natural natural language processing have chosen to use it~\cite{data:companies_using_spacy}.\\
 
-While it is common to tokenize sentences into words before passing them to a model, we thought it would be interesting to use lemmas instead of the original words since different variations of the original lemma have the same meaning (e.g. 'be', 'been' and 'am' refer to the same concept) and models should benefit from this process since they will have the chance to see multiple times the same lemma in different contexts. We also decided not to test the effects of applying stemming on our dataset since many stemming algorithms consider some heuristics to cut the end of a word, and while they can be successful in some occasions, this is not always the case ~\cite{data:standfordNLP}.\\
+While it is common to tokenize sentences into words before passing them to a model, we thought it would be interesting to use lemmas instead of the original words since different variations of the original lemma have the same meaning (e.g. 'be', 'been' and 'am' refer to the same concept) and models should benefit from this process since they will have the chance to see multiple times the same lemma in different contexts. \\
 
-Moreover, we managed to filter out from our corpus those common words that do not contribute to adding meaning to our sentences: the so-called stopwords. There are a plethora of valid collections of stopwords available on the web (e.g. NLTK~\cite{startups:nltk}, Gensim~\cite{startups:gensim}) and we decided to use those offered by spaCy. Although stopwords removal is something very common in many NLP tasks, we later discovered that there exist different categories of stopwords and some of them may be more relevant for our task.
-Along these lines, we experimentally crafted a set of stopwords that allowed us to get better results. Please refer to the next subsection for the relative discussion and the benchmarks.\\
+Moreover, we managed to filter out from our corpus those common words that do not contribute to adding meaning to our sentences: the so-called stopwords. There are a plethora of valid collections of stopwords available on the web (e.g. NLTK~\cite{startups:nltk}, Gensim~\cite{startups:gensim}) and we decided to use those offered by spaCy. %Although stopwords removal is something very common in many NLP tasks, we later discovered that there exist different categories of stopwords and some of them may be more relevant for our task.
+%Along these lines, we experimentally crafted a set of stopwords that allowed us to get better results. Please refer to the next subsection for the relative discussion and the benchmarks.\\
 
-However, the preprocessing phase was not something that was specifically designed for the Twitter dataset, and we applied it to all the datasets we compared with (e.g. IMDb~\cite{data:imdb}) when necessary.
+%However, the preprocessing phase was not something that was specifically designed for the Twitter dataset, and we applied it to all the datasets we compared with (e.g. IMDb~\cite{data:imdb}) when necessary (we used other datasets to perfom some unusual tests, which will be discussed in some sections).
 
-\subsection*{Effects of stopwords removal}
+\subsection*{Effects of preprocessing}
 
 At first, we expected this process to lead to good results since it simplifies the problem by removing a possibly long list of words whose presence can be neglected, but we had to change our mind about that.\\
 
@@ -39,19 +39,19 @@ Here, we can see some interesting results when testing our intuition on data pre
 
 
 
-We struggled to understand the reasons why this scenario occurs, and we found two principal causes of performance decrease. First, lemmatization is not always a good idea, and in some cases using the original words instead of their lemma is the best choice. More in general, this is a strong text manipulation technique, and common sense tells us that if it does not allow us to gain a significant performance gain, we should better avoid it~\cite{data:lemmatization_tips}. Second, we tested our dataset using different combinations of stopwords and found out that some of them allowed us to get better results.\\
+We struggled to understand the reasons why this scenario occurs, and we found two principal causes of performance decrease. First, lemmatization is not always a good idea, and in some cases using the original words instead of their lemma is the best choice. More in general, this is a strong text manipulation technique, and common sense tells us that if it does not allow us to gain a significant performance gain, we should better avoid it~\cite{data:lemmatization_tips}. Second, it's not always a good idea to remove stopwords, especially if the stopwords come from a general dictionary, in fact some words considered stopwords in a context might be useful words in another context. Using the spaCy stopwords the performance of our model decreased, instead using an ad-hoc set of stopwords (which contained only a few words such as articles and pronouns) we got some slightly better results compared to the case where no preprocessing at all is done.\\
 
-In particular, performing some ad-hoc stopwords removal, we managed to get even slightly better results compared to the case where no preprocessing at all is done. This confirms the intuition that not all stopwords are equal and there exist some stopwords that are more significant than others.
+%In particular, performing some ad-hoc stopwords removal, we managed to get even slightly better results compared to the case where no preprocessing at all is done. This confirms the intuition that not all stopwords are equal and there exist some stopwords that are more significant than others.
 
 \begin{table}[h!t]
     \centering
-    \caption{Comparing the results of preprocessing on our Bernoulli model.}
+    \caption{Comparing the results of preprocessing on our Bernoulli model. We randomly splitted the dataset in 80\% training set, 20\% test set}
     \label{tab:versus_metrics}
     \begin{tabular}{c|c}
         \hline
         Preprocessing & Accuracy \\
         \hline 
-        complete & 0.7690 \\ 
+        complete (spaCy pipeline) & 0.7690 \\ 
         none & 0.7828 \\ 
         ad-hoc stopwords removal & 0.7834 \\ 
         \hline
